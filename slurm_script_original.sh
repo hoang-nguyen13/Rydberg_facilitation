@@ -9,7 +9,7 @@
 #SBATCH --mem-per-cpu 8G
 #SBATCH --array=1-21
 
-id = ${SLURM_ARRAY_TASK_ID}
+id=${SLURM_ARRAY_TASK_ID}
 
 # Run Julia with omega range
 ~/julia-1.11.2/bin/julia main.jl ${id}
