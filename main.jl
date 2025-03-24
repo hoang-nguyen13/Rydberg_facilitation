@@ -130,18 +130,19 @@ end
 script_dir = @__DIR__
 
 @time begin
-    # Get task ID from SLURM
-    task_id = parse(Int, ARGS[1])  # 0 to 83
-    Ω = Ω_values[task_id]
-    γ = γ_values[task_id]
+    task_id = parse(Int, ARGS[1])  # 0 to 20 from SLURM
+    Ω_idx = task_id + 1  # Adjust: 1 to 21
+    Ω = Ω_values[Ω_idx]
     
-    # Create data folder
-    data_folder = joinpath(script_dir, "results_data/atoms=$(nAtoms),Δ=$(Δ),γ=$(γ)")
-    if !isdir(data_folder)
-        mkpath(data_folder)  # Only create if it doesn’t exist
+    # Loop over γ values
+    for γ in γ_values
+        data_folder = joinpath(script_dir, "results_data/atoms=$(nAtoms),Δ=$(Δ),γ=$(γ)")
+        if !isdir(data_folder)
+            mkpath(data_folder)
+        end
+        
+        println("Computing for nAtoms = $nAtoms, γ = $γ, Ω = $Ω")
+        @time t, sol = computeTWA(nAtoms, tf, nT, nTraj, dt, Ω, Δ, V, Γ, γ)
+        @save "$(data_folder)/sz_mean_steady_for_$(case)D,Ω=$(Ω),Δ=$(Δ),γ=$(γ).jld2" t sol
     end
-    
-    println("Computing for nAtoms = $nAtoms, γ = $γ, Ω = $Ω")
-    @time t, sol = computeTWA(nAtoms, tf, nT, nTraj, dt, Ω, Δ, V, Γ, γ)
-    @save "$(data_folder)/sz_mean_steady_for_$(case)D,Ω=$(Ω),Δ=$(Δ),γ=$(γ).jld2" t sol
 end
