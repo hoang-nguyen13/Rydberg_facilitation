@@ -130,22 +130,25 @@ end
 script_dir = @__DIR__
 
 @time begin
-    for γ in γ_values
-         # Create unique folder for each γ value
-        data_folder = joinpath(script_dir, "results_data/atoms=$(nAtoms),Δ=$(Δ),γ=$(γ)")
-        
-        # If folder exists, delete it and recreate it
-        if isdir(data_folder)
-            rm(data_folder, recursive=true)  # Delete the folder and all its contents
-        end
-        mkpath(data_folder)  # Create the folder anew
-        
-        println("Computing for nAtoms = $(nAtoms), γ = $(γ)...\n")
-        
-        index = parse(Int, ARGS[1])
-        Ω = Ω_values[index]
-        println("Computing for Ω = $(Ω)")
-        @time t, sol = computeTWA(nAtoms, tf, nT, nTraj, dt, Ω, Δ, V, Γ, γ)
-        @save "$(data_folder)/sz_mean_steady_for_$(case)D,Ω=$(Ω),Δ=$(Δ),γ=$(γ).jld2" t sol
+    # Get task ID from SLURM
+    task_id = parse(Int, ARGS[1])
+    
+    # Map task_id to (Ω, γ) pair
+    n_γ = length(γ_values)  # 4
+    n_Ω = length(Ω_values)  # 21
+    Ω_idx = task_id ÷ n_γ + 1    # Integer division, adjust for 1-based indexing
+    γ_idx = task_id % n_γ + 1    # Modulo, adjust for 1-based indexing
+    
+    Ω = Ω_values[Ω_idx]
+    γ = γ_values[γ_idx]
+    
+    # Create data folder
+    data_folder = joinpath(script_dir, "results_data/atoms=$(nAtoms),Δ=$(Δ),γ=$(γ)")
+    if !isdir(data_folder)
+        mkpath(data_folder)  # Only create if it doesn’t exist
     end
+    
+    println("Computing for nAtoms = $nAtoms, γ = $γ, Ω = $Ω")
+    @time t, sol = computeTWA(nAtoms, tf, nT, nTraj, dt, Ω, Δ, V, Γ, γ)
+    @save "$(data_folder)/sz_mean_steady_for_$(case)D,Ω=$(Ω),Δ=$(Δ),γ=$(γ).jld2" t sol
 end
