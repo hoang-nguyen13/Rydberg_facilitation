@@ -130,8 +130,8 @@ end
 script_dir = @__DIR__
 
 @time begin
-    task_id = parse(Int, ARGS[1])  # 0 to 20 from SLURM
-    Ω_idx = task_id  # Adjust: 1 to 21
+    task_id = parse(Int, ARGS[1])
+    Ω_idx = task_id
     Ω = Ω_values[Ω_idx]
     
     # Loop over γ values
