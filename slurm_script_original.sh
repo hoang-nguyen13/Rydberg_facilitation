@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH -J Rydberg
-#SBATCH -cpus-per-task=1
+#SBATCH --cpus-per-task=1
 #SBATCH -t 50:00:00
 #SBATCH -p physik-fleischhauer
 #SBATCH -e err/%x_%A_%a.err
