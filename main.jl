@@ -131,18 +131,17 @@ script_dir = @__DIR__
 
 @time begin
     task_id = parse(Int, ARGS[1])
-    Ω_idx = task_id
+    Ω_idx = task_id + 1
+    γ_idx = task_id + 1
+
     Ω = Ω_values[Ω_idx]
-    
-    # Loop over γ values
-    for γ in γ_values
-        data_folder = joinpath(script_dir, "results_data/atoms=$(nAtoms),Δ=$(Δ),γ=$(γ)")
-        if !isdir(data_folder)
-            mkpath(data_folder)
-        end
-        
-        println("Computing for nAtoms = $nAtoms, γ = $γ, Ω = $Ω")
-        @time t, sol = computeTWA(nAtoms, tf, nT, nTraj, dt, Ω, Δ, V, Γ, γ)
-        @save "$(data_folder)/sz_mean_steady_for_$(case)D,Ω=$(Ω),Δ=$(Δ),γ=$(γ).jld2" t sol
+    γ = γ_values[γ_idx]
+
+    data_folder = joinpath(script_dir, "results_data/atoms=$(nAtoms),Δ=$(Δ),γ=$(γ)")
+    if !isdir(data_folder)
+        mkpath(data_folder)
     end
+    println("Computing for nAtoms = $nAtoms, γ = $γ, Ω = $Ω")
+    @time t, sol = computeTWA(nAtoms, tf, nT, nTraj, dt, Ω, Δ, V, Γ, γ)
+    @save "$(data_folder)/sz_mean_steady_for_$(case)D,Ω=$(Ω),Δ=$(Δ),γ=$(γ).jld2" t sol
 end
