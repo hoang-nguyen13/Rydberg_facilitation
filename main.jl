@@ -131,16 +131,9 @@ script_dir = @__DIR__
 
 @time begin
     # Get task ID from SLURM
-    task_id = parse(Int, ARGS[1])
-    
-    # Map task_id to (Ω, γ) pair
-    n_γ = length(γ_values)  # 4
-    n_Ω = length(Ω_values)  # 21
-    Ω_idx = task_id ÷ n_γ + 1    # Integer division, adjust for 1-based indexing
-    γ_idx = task_id % n_γ + 1    # Modulo, adjust for 1-based indexing
-    
-    Ω = Ω_values[Ω_idx]
-    γ = γ_values[γ_idx]
+    task_id = parse(Int, ARGS[1])  # 0 to 83
+    Ω = Ω_values[task_id]
+    γ = γ_values[task_id]
     
     # Create data folder
     data_folder = joinpath(script_dir, "results_data/atoms=$(nAtoms),Δ=$(Δ),γ=$(γ)")
