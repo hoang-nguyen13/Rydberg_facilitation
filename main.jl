@@ -130,10 +130,12 @@ end
 script_dir = @__DIR__
 
 @time begin
-    task_id = parse(Int, ARGS[1])
-    Ω_idx = task_id + 1
-    γ_idx = task_id + 1
-
+    task_id = parse(Int, ARGS[1])  # Line 134: Expects an argument
+    n_γ = length(γ_values)  # 4
+    n_Ω = length(Ω_values)  # 21
+    
+    Ω_idx = task_id ÷ n_γ + 1
+    γ_idx = task_id % n_γ + 1
     Ω = Ω_values[Ω_idx]
     γ = γ_values[γ_idx]
 
