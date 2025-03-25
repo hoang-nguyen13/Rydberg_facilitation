@@ -107,7 +107,7 @@ V = Δ
 nAtoms = 400
 tf = 15
 nT = 400
-nTraj = 500
+nTraj = 1
 dt = 1e-2
 case = 2
 

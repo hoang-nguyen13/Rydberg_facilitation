@@ -1,0 +1,17 @@
+ERROR: LoadError: BoundsError: attempt to access 21-element StepRange{Int64, Int64} at index [35]
+Stacktrace:
+ [1] throw_boundserror(A::StepRange{Int64, Int64}, I::Tuple{Int64})
+   @ Base ./essentials.jl:14
+ [2] checkbounds
+   @ ./abstractarray.jl:699 [inlined]
+ [3] _getindex
+   @ ./range.jl:922 [inlined]
+ [4] getindex(v::StepRange{Int64, Int64}, i::Int64)
+   @ Base ./array.jl:3076
+ [5] macro expansion
+   @ ~/Rydberg_facilitation/main.jl:137 [inlined]
+ [6] macro expansion
+   @ ./timing.jl:581 [inlined]
+ [7] top-level scope
+   @ ~/Rydberg_facilitation/main.jl:315
+in expression starting at /home/quw51vuk/Rydberg_facilitation/main.jl:132
