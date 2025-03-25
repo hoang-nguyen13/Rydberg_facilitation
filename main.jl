@@ -12,6 +12,7 @@ function sampleSpinZPlus(n)
     ϕ = 2π * rand(n)                  
     return θ, ϕ
 end
+
 function sampleSpinZMinus(n)
     θ = fill(π - acos(1 / sqrt(3)), n)   
     ϕ = 2π * rand(n)                  
@@ -30,12 +31,7 @@ function get_neighbors_vectorized(nAtoms)
     matrix_size = sqrt(nAtoms) |> Int
     rows = [(div(i - 1, matrix_size) + 1) for i in 1:nAtoms]
     cols = [(mod(i - 1, matrix_size) + 1) for i in 1:nAtoms]
-    neighbor_offsets = [
-        (-1, 0),  # Up
-        (1, 0),   # Down
-        (0, -1),  # Left
-        (0, 1)    # Right
-    ]
+    neighbor_offsets = [(-1, 0), (1, 0), (0, -1), (0, 1)]
     neighbors = Vector{Vector{Int}}(undef, nAtoms)
     for i in 1:nAtoms
         row, col = rows[i], cols[i]
@@ -59,8 +55,7 @@ function drift!(du, u, p, t)
         dϕ_drift_sum[2:end-1] .= 2 .+ sqrt_3 .* (cos.(θ[1:end-2]) .+ cos.(θ[3:end]))
         dϕ_drift_sum[1] = 1 + sqrt_3 * cos(θ[2]) 
         dϕ_drift_sum[end] = 1 + sqrt_3 * cos(θ[end-1])
-    end
-    if case == 2
+    elseif case == 2
         neighbors = get_neighbors_vectorized(nAtoms)
         for n in 1:nAtoms
             neighbor_indices = neighbors[n]
@@ -101,13 +96,8 @@ function computeTWA(nAtoms, tf, nT, nTraj, dt, Ω, Δ, V, Γ, γ)
         saveat=tSave, trajectories=nTraj, maxiters=1e+7, dt=dt,
         abstol=1e-3, reltol=1e-3)
     
-    return tSave, sol
-end
-
-function compute_spin_Sz(sol, nAtoms)
-    θ = sol[1:nAtoms, :, :]
-    Szs = sum(sqrt(3) * cos.(θ),dims=1)
-    return Szs
+    Szs = sum(sqrt(3) * cos.(sol[1:nAtoms, :, :]), dims=1)  # Only compute Szs
+    return tSave, Szs
 end
 
 Γ = 1
@@ -130,7 +120,7 @@ end
 script_dir = @__DIR__
 
 @time begin
-    task_id = parse(Int, ARGS[1])  # Line 134: Expects an argument
+    task_id = parse(Int, ARGS[1])  # Expects a command-line argument
     n_γ = length(γ_values)  # 4
     n_Ω = length(Ω_values)  # 21
     
@@ -144,6 +134,6 @@ script_dir = @__DIR__
         mkpath(data_folder)
     end
     println("Computing for nAtoms = $nAtoms, γ = $γ, Ω = $Ω")
-    @time t, sol = computeTWA(nAtoms, tf, nT, nTraj, dt, Ω, Δ, V, Γ, γ)
-    @save "$(data_folder)/sz_mean_steady_for_$(case)D,Ω=$(Ω),Δ=$(Δ),γ=$(γ).jld2" t sol
+    @time t, Szs = computeTWA(nAtoms, tf, nT, nTraj, dt, Ω, Δ, V, Γ, γ)
+    @save "$(data_folder)/sz_mean_steady_for_$(case)D,Ω=$(Ω),Δ=$(Δ),γ=$(γ).jld2" t Szs compress=true
 end
