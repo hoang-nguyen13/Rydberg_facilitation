@@ -92,7 +92,7 @@ function computeTWA(nAtoms, tf, nT, nTraj, dt, Ω, Δ, V, Γ, γ)
     prob = SDEProblem(drift!, diffusion!, u0, tspan, p)
     ensemble_prob = EnsembleProblem(prob; prob_func=prob_func)
     
-    sol = solve(ensemble_prob, SRIW1(), EnsembleThreads();
+    sol = solve(ensemble_prob, SOSRI2(), EnsembleThreads();
         saveat=tSave, trajectories=nTraj, maxiters=1e+7, dt=dt,
         abstol=1e-3, reltol=1e-3)
     
