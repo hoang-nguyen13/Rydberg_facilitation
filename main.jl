@@ -70,15 +70,28 @@ function drift!(du, u, p, t)
     du[nAtoms+1:2*nAtoms] .= dϕ_drift
 end
 
+# function diffusion!(du, u, p, t)
+#     Ω, Δ, V, Γ, γ = p
+#     θ = u[1:nAtoms]
+#     sqrt_3 = sqrt(3)
+#     term1 = 9 / 6
+#     term2 = (4 * sqrt_3 / 6) .* cos.(θ)
+#     term3 = (3 / 6) .* cos.(2 .* θ)
+#     cscθ2 = csc.(θ) .^ 2
+#     diffusion = sqrt.(Γ .* (term1 .+ term2 .+ term3) .* cscθ2 .+ 4 .* γ)
+#     du[1:nAtoms] .= 0.0
+#     du[nAtoms+1:2*nAtoms] .= diffusion
+# end
+
 function diffusion!(du, u, p, t)
     Ω, Δ, V, Γ, γ = p
     θ = u[1:nAtoms]
     sqrt_3 = sqrt(3)
-    term1 = 9 / 6
-    term2 = (4 * sqrt_3 / 6) .* cos.(θ)
-    term3 = (3 / 6) .* cos.(2 .* θ)
-    cscθ2 = csc.(θ) .^ 2
-    diffusion = sqrt.(Γ .* (term1 .+ term2 .+ term3) .* cscθ2 .+ 4 .* γ)
+    term1 = 1
+    term2 = 2 .* cot.(θ) .^ 2
+    term3 = 2 .* cot.(θ) .* csc.(θ) ./ sqrt_3
+    # cscθ2 = csc.(θ) .^ 2
+    diffusion = NaNMath.sqrt.(Γ .* (term1 .+ term2 .+ term3) .+ 4 .* γ)
     du[1:nAtoms] .= 0.0
     du[nAtoms+1:2*nAtoms] .= diffusion
 end
@@ -93,7 +106,7 @@ function computeTWA(nAtoms, tf, nT, nTraj, dt, Ω, Δ, V, Γ, γ)
     ensemble_prob = EnsembleProblem(prob; prob_func=prob_func)
     
     sol = solve(ensemble_prob, SOSRI2(), EnsembleThreads();
-        saveat=tSave, trajectories=nTraj, maxiters=1e+7, dt=dt,
+        saveat=tSave, trajectories=nTraj, maxiters=1e+7,
         abstol=1e-3, reltol=1e-2)
     
     Szs = sum(sqrt(3) * cos.(sol[1:nAtoms, :, :]), dims=1)  # Only compute Szs
@@ -102,12 +115,12 @@ end
 
 Γ = 1
 γ_values = [1e-3 * Γ, 1e-2 * Γ, 1e-1 * Γ, 1 * Γ]
-Δ = 400 * Γ
+Δ = 2000 * Γ
 V = Δ
 nAtoms = 400
 tf = 15
 nT = 400
-nTraj = 1000
+nTraj = 500
 dt = 1e-2
 case = 2
 
