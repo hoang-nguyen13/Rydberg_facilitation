@@ -1,3 +1,0 @@
-Computing for nAtoms = 400, γ = 1.0, Ω = 3
- 27.833337 seconds (356.38 M allocations: 17.295 GiB, 15.48% gc time, 30.19% compilation time)
- 29.378709 seconds (358.19 M allocations: 17.384 GiB, 14.67% gc time, 33.77% compilation time: 10% of which was recompilation)
