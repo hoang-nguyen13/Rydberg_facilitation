@@ -94,7 +94,7 @@ function computeTWA(nAtoms, tf, nT, nTraj, dt, Ω, Δ, V, Γ, γ)
     
     sol = solve(ensemble_prob, SOSRI2(), EnsembleThreads();
         saveat=tSave, trajectories=nTraj, maxiters=1e+7, dt=dt,
-        abstol=1e-3, reltol=1e-3)
+        abstol=1e-3, reltol=1e-2)
     
     Szs = sum(sqrt(3) * cos.(sol[1:nAtoms, :, :]), dims=1)  # Only compute Szs
     return tSave, Szs
