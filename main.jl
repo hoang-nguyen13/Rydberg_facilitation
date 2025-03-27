@@ -133,25 +133,32 @@ end
 script_dir = @__DIR__
 
 @time begin
-    index = parse(Int, ARGS[1])  # SLURM task ID (0 to 20)
+    println("Job started for SLURM_ARRAY_TASK_ID = $(ARGS[1]) at $(Dates.now())")
+    flush(stdout)
+    index = parse(Int, ARGS[1])
     Ω_idx = index + 1
     Ω = Ω_values[Ω_idx]
+    println("Ω = $Ω, n_γ = $(length(γ_values))")
+    flush(stdout)
     
-    n_threads_total = Threads.nthreads()  # 16 from -t 16
-    n_γ = length(γ_values)  # 8
-    threads_per_γ = max(1, n_threads_total ÷ n_γ)  # 16 ÷ 8 = 2 threads per γ
-    
+    n_threads_total = Threads.nthreads()
+    n_γ = length(γ_values)
+    threads_per_γ = max(1, n_threads_total ÷ n_γ)
     println("Total threads: $n_threads_total, Threads per γ: $threads_per_γ, nTraj per thread: $(nTraj ÷ threads_per_γ)")
+    flush(stdout)
     
-    # Pre-allocate results to avoid race conditions
     results = Vector{Tuple{Vector{Float64}, Array{Float64, 3}}}(undef, n_γ)
+    println("Entering Threads.@threads loop at $(Dates.now())")
+    flush(stdout)
     
     # Parallelize γ loop with @threads
     Threads.@threads for i in 1:n_γ
         γ = γ_values[i]
         data_folder = joinpath(script_dir, "results_data/atoms=$(nAtoms),Δ=$(Δ),γ=$(γ)")
         if !isdir(data_folder)
-            mkpath(data_folder)  # Note: This might need synchronization in practice
+            println("Creating folder: $data_folder at $(Dates.now())")
+            flush(stdout)
+            mkpath(data_folder)
         end
         println("Computing for nAtoms = $nAtoms, γ = $γ, Ω = $Ω on thread $(Threads.threadid())")
         
@@ -159,6 +166,8 @@ script_dir = @__DIR__
         t, Szs = let
             old_threads = get(ENV, "JULIA_NUM_THREADS", string(n_threads_total))
             ENV["JULIA_NUM_THREADS"] = string(threads_per_γ)
+            println("Starting computeTWA for γ = $γ, Ω = $Ω on thread $(Threads.threadid())")
+            flush(stdout)
             result = computeTWA(nAtoms, tf, nT, nTraj, dt, Ω, Δ, V, Γ, γ)
             ENV["JULIA_NUM_THREADS"] = old_threads
             result
