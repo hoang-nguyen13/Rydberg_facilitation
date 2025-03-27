@@ -133,20 +133,16 @@ end
 script_dir = @__DIR__
 
 @time begin
-    task_id = parse(Int, ARGS[1])  # Expects a command-line argument
-    n_γ = length(γ_values)  # 4
-    n_Ω = length(Ω_values)  # 21
-    
-    Ω_idx = task_id ÷ n_γ + 1
-    γ_idx = task_id % n_γ + 1
-    Ω = Ω_values[Ω_idx]
-    γ = γ_values[γ_idx]
-
-    data_folder = joinpath(script_dir, "results_data/atoms=$(nAtoms),Δ=$(Δ),γ=$(γ)")
-    if !isdir(data_folder)
-        mkpath(data_folder)
+    for γ in γ_values
+        index = parse(Int, ARGS[1])
+        Ω_idx = index + 1
+        Ω = Ω_values[Ω_idx]
+        data_folder = joinpath(script_dir, "results_data/atoms=$(nAtoms),Δ=$(Δ),γ=$(γ)")
+        if !isdir(data_folder)
+            mkpath(data_folder)
+        end
+        println("Computing for nAtoms = $nAtoms, γ = $γ, Ω = $Ω")
+        @time t, Szs = computeTWA(nAtoms, tf, nT, nTraj, dt, Ω, Δ, V, Γ, γ)
+        @save "$(data_folder)/sz_mean_steady_for_$(case)D,Ω=$(Ω),Δ=$(Δ),γ=$(γ).jld2" t Szs compress=true
     end
-    println("Computing for nAtoms = $nAtoms, γ = $γ, Ω = $Ω")
-    @time t, Szs = computeTWA(nAtoms, tf, nT, nTraj, dt, Ω, Δ, V, Γ, γ)
-    @save "$(data_folder)/sz_mean_steady_for_$(case)D,Ω=$(Ω),Δ=$(Δ),γ=$(γ).jld2" t Szs compress=true
 end
