@@ -133,10 +133,16 @@ end
 script_dir = @__DIR__
 
 @time begin
-    println("Job started for SLURM_ARRAY_TASK_ID = $(ARGS[1]) at $(Dates.now())")
+    task_id = length(ARGS) > 0 ? ARGS[1] : "0"
+    println("Job started for SLURM_ARRAY_TASK_ID = $task_id at $(Dates.now())")
     flush(stdout)
-    index = parse(Int, ARGS[1])
+    println("ARGS: $ARGS, Threads: $(Threads.nthreads())")
+    flush(stdout)
+    index = parse(Int, task_id)
     Ω_idx = index + 1
+    if Ω_idx > length(Ω_values)
+        error("Index $index exceeds Ω_values length $(length(Ω_values))")
+    end
     Ω = Ω_values[Ω_idx]
     println("Ω = $Ω, n_γ = $(length(γ_values))")
     flush(stdout)
@@ -151,7 +157,6 @@ script_dir = @__DIR__
     println("Entering Threads.@threads loop at $(Dates.now())")
     flush(stdout)
     
-    # Parallelize γ loop with @threads
     Threads.@threads for i in 1:n_γ
         γ = γ_values[i]
         data_folder = joinpath(script_dir, "results_data/atoms=$(nAtoms),Δ=$(Δ),γ=$(γ)")
@@ -160,26 +165,20 @@ script_dir = @__DIR__
             flush(stdout)
             mkpath(data_folder)
         end
-        println("Computing for nAtoms = $nAtoms, γ = $γ, Ω = $Ω on thread $(Threads.threadid())")
-        
-        # Limit threads for EnsembleThreads
-        t, Szs = let
-            old_threads = get(ENV, "JULIA_NUM_THREADS", string(n_threads_total))
-            ENV["JULIA_NUM_THREADS"] = string(threads_per_γ)
-            println("Starting computeTWA for γ = $γ, Ω = $Ω on thread $(Threads.threadid())")
-            flush(stdout)
-            result = computeTWA(nAtoms, tf, nT, nTraj, dt, Ω, Δ, V, Γ, γ)
-            ENV["JULIA_NUM_THREADS"] = old_threads
-            result
-        end
+        println("Simulating computeTWA for γ = $γ, Ω = $Ω on thread $(Threads.threadid())")
+        flush(stdout)
+        # Simulate results without computation
+        t = collect(0:dt:tf)  # Dummy time array
+        Szs = zeros(1, length(t), nTraj)  # Dummy Szs array
         results[i] = (t, Szs)
     end
     
-    # Save results after computation
     for i in 1:n_γ
         γ = γ_values[i]
         t, Szs = results[i]
         data_folder = joinpath(script_dir, "results_data/atoms=$(nAtoms),Δ=$(Δ),γ=$(γ)")
+        println("Saving dummy data for γ = $γ, Ω = $Ω at $(Dates.now())")
+        flush(stdout)
         @save "$(data_folder)/sz_mean_steady_for_$(case)D,Ω=$(Ω),Δ=$(Δ),γ=$(γ).jld2" t Szs compress=true
     end
 end
