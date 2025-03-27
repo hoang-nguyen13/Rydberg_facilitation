@@ -1,27 +1,17 @@
 using LaTeXStrings
-println("Loaded LaTeXStrings package")
 using JLD2
-println("Loaded JLD2 package")
 using LinearAlgebra
-println("Loaded LinearAlgebra package")
 using Statistics
-println("Loaded Statistics package")
 using DifferentialEquations
-println("Loaded DifferentialEquations package")
 using Random
-println("Loaded Random package")
 using ArgParse
-println("Loaded ArgParse package")
 using Dates
-println("Loaded Dates package")
-BLAS.set_num_threads(1)
 
 function sampleSpinZPlus(n)
     θ = fill(acos(1 / sqrt(3)), n)
     ϕ = 2π * rand(n)                  
     return θ, ϕ
 end
-println("Defined sampleSpinZPlus function")
 
 function prob_func(prob, i, repeat)
     u0 = Vector{Float64}(undef, 2 * nAtoms)
@@ -30,7 +20,6 @@ function prob_func(prob, i, repeat)
     u0[nAtoms+1:2*nAtoms] = ϕ
     return remake(prob, u0=u0)
 end
-println("Defined prob_func function")
 
 function get_neighbors_vectorized(nAtoms)
     matrix_size = sqrt(nAtoms) |> Int
@@ -49,7 +38,6 @@ function get_neighbors_vectorized(nAtoms)
     end
     return neighbors
 end
-println("Defined get_neighbors_vectorized function")
 
 function drift!(du, u, p, t)
     Ω, Δ, V, Γ, γ = p
@@ -75,7 +63,6 @@ function drift!(du, u, p, t)
     du[1:nAtoms] .= dθ_drift
     du[nAtoms+1:2*nAtoms] .= dϕ_drift
 end
-println("Defined drift! function")
 
 function diffusion!(du, u, p, t)
     Ω, Δ, V, Γ, γ = p
@@ -88,7 +75,6 @@ function diffusion!(du, u, p, t)
     du[1:nAtoms] .= 0.0
     du[nAtoms+1:2*nAtoms] .= diffusion
 end
-println("Defined diffusion! function")
 
 function computeTWA(nAtoms, tf, nT, nTraj, dt, Ω, Δ, V, Γ, γ)
     tspan = (0, tf)
@@ -99,28 +85,44 @@ function computeTWA(nAtoms, tf, nT, nTraj, dt, Ω, Δ, V, Γ, γ)
     prob = SDEProblem(drift!, diffusion!, u0, tspan, p)
     ensemble_prob = EnsembleProblem(prob; prob_func=prob_func)
     
-    sol = solve(ensemble_prob, SOSRI2(), EnsembleThreads();
+    sol = solve(ensemble_prob, SOSRI2();
         saveat=tSave, trajectories=nTraj, maxiters=1e+7,
         abstol=1e-3, reltol=1e-2)
     
     Szs = sum(sqrt(3) * cos.(sol[1:nAtoms, :, :]), dims=1)
     return tSave, Szs
 end
-println("Defined computeTWA function")
 
 # Parameters
 Γ = 1
 γ = 1e-3 * Γ
-Δ = 2000 * Γ
+Δ = 400 * Γ
 V = Δ
-nAtoms = 400
+nAtoms = 4
 tf = 15
 nT = 400
-nTraj = 500
-dt = 1e-2
+nTraj = 1
+dt = 1e-1
 case = 2
 
-Ω_values = case == 1 ? (0:1:40) : (0:1:20)
+if case == 1
+    Ω_values = 0:1:40
+else
+    Ω_values = 0:1:20
+end
+
 script_dir = @__DIR__
 
-println("Pass variables")
+@time begin
+    task_id = parse(Int, ARGS[1])
+    Ω_idx = task_id + 1
+    Ω = Ω_values[Ω_idx]
+
+    data_folder = joinpath(script_dir, "results_data/atoms=$(nAtoms),Δ=$(Δ),γ=$(γ)")
+    if !isdir(data_folder)
+        mkpath(data_folder)
+    end
+    println("Computing for nAtoms = $nAtoms, γ = $γ, Ω = $Ω")
+    @time t, Szs = computeTWA(nAtoms, tf, nT, nTraj, dt, Ω, Δ, V, Γ, γ)
+    @save "$(data_folder)/sz_mean_steady_for_$(case)D,Ω=$(Ω),Δ=$(Δ),γ=$(γ).jld2" t Szs
+end
