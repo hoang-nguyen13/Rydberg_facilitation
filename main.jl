@@ -5,7 +5,6 @@ using Statistics
 using DifferentialEquations
 using Random
 using ArgParse
-using ThreadsX
 BLAS.set_num_threads(1)
 
 function sampleSpinZPlus(n)
@@ -138,30 +137,40 @@ script_dir = @__DIR__
     Ω_idx = index + 1
     Ω = Ω_values[Ω_idx]
     
-    # Calculate threads per γ to avoid oversubscription
     n_threads_total = Threads.nthreads()  # 16 from -t 16
-    n_γ = length(γ_values)  # 6
-    threads_per_γ = max(1, n_threads_total ÷ n_γ)  # e.g., 16 ÷ 6 ≈ 2 threads per γ
+    n_γ = length(γ_values)  # 8
+    threads_per_γ = max(1, n_threads_total ÷ n_γ)  # 16 ÷ 8 = 2 threads per γ
     
-    println("Total threads: $n_threads_total, Threads per γ: $threads_per_γ")
+    println("Total threads: $n_threads_total, Threads per γ: $threads_per_γ, nTraj per thread: $(nTraj ÷ threads_per_γ)")
     
-    # Parallelize over γ with limited threads per computeTWA
-    ThreadsX.foreach(γ_values) do γ
+    # Pre-allocate results to avoid race conditions
+    results = Vector{Tuple{Vector{Float64}, Array{Float64, 3}}}(undef, n_γ)
+    
+    # Parallelize γ loop with @threads
+    Threads.@threads for i in 1:n_γ
+        γ = γ_values[i]
         data_folder = joinpath(script_dir, "results_data/atoms=$(nAtoms),Δ=$(Δ),γ=$(γ)")
         if !isdir(data_folder)
-            mkpath(data_folder)
+            mkpath(data_folder)  # Note: This might need synchronization in practice
         end
         println("Computing for nAtoms = $nAtoms, γ = $γ, Ω = $Ω on thread $(Threads.threadid())")
         
-        # Limit threads for EnsembleThreads within computeTWA
+        # Limit threads for EnsembleThreads
         t, Szs = let
-            # Temporarily set JULIA_NUM_THREADS for this scope
             old_threads = get(ENV, "JULIA_NUM_THREADS", string(n_threads_total))
             ENV["JULIA_NUM_THREADS"] = string(threads_per_γ)
             result = computeTWA(nAtoms, tf, nT, nTraj, dt, Ω, Δ, V, Γ, γ)
-            ENV["JULIA_NUM_THREADS"] = old_threads  # Restore original
+            ENV["JULIA_NUM_THREADS"] = old_threads
             result
         end
+        results[i] = (t, Szs)
+    end
+    
+    # Save results after computation
+    for i in 1:n_γ
+        γ = γ_values[i]
+        t, Szs = results[i]
+        data_folder = joinpath(script_dir, "results_data/atoms=$(nAtoms),Δ=$(Δ),γ=$(γ)")
         @save "$(data_folder)/sz_mean_steady_for_$(case)D,Ω=$(Ω),Δ=$(Δ),γ=$(γ).jld2" t Szs compress=true
     end
 end
