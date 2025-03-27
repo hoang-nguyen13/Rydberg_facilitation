@@ -5,6 +5,7 @@ using Statistics
 using DifferentialEquations
 using Random
 using ArgParse
+using ThreadsX
 BLAS.set_num_threads(1)
 
 function sampleSpinZPlus(n)
@@ -114,7 +115,7 @@ function computeTWA(nAtoms, tf, nT, nTraj, dt, Ω, Δ, V, Γ, γ)
 end
 
 Γ = 1
-γ_values = [1e-3 * Γ, 1e-2 * Γ, 1e-1 * Γ, 1 * Γ]
+γ_values = [1e-3 * Γ, 1e-2 * Γ, 1e-1 * Γ, 1 * Γ, 10 * Γ, 20 * Γ, 30 * Γ, 40 * Γ]
 Δ = 2000 * Γ
 V = Δ
 nAtoms = 400
@@ -133,16 +134,34 @@ end
 script_dir = @__DIR__
 
 @time begin
-    for γ in γ_values
-        index = parse(Int, ARGS[1])
-        Ω_idx = index + 1
-        Ω = Ω_values[Ω_idx]
+    index = parse(Int, ARGS[1])  # SLURM task ID (0 to 20)
+    Ω_idx = index + 1
+    Ω = Ω_values[Ω_idx]
+    
+    # Calculate threads per γ to avoid oversubscription
+    n_threads_total = Threads.nthreads()  # 16 from -t 16
+    n_γ = length(γ_values)  # 6
+    threads_per_γ = max(1, n_threads_total ÷ n_γ)  # e.g., 16 ÷ 6 ≈ 2 threads per γ
+    
+    println("Total threads: $n_threads_total, Threads per γ: $threads_per_γ")
+    
+    # Parallelize over γ with limited threads per computeTWA
+    ThreadsX.foreach(γ_values) do γ
         data_folder = joinpath(script_dir, "results_data/atoms=$(nAtoms),Δ=$(Δ),γ=$(γ)")
         if !isdir(data_folder)
             mkpath(data_folder)
         end
-        println("Computing for nAtoms = $nAtoms, γ = $γ, Ω = $Ω")
-        @time t, Szs = computeTWA(nAtoms, tf, nT, nTraj, dt, Ω, Δ, V, Γ, γ)
+        println("Computing for nAtoms = $nAtoms, γ = $γ, Ω = $Ω on thread $(Threads.threadid())")
+        
+        # Limit threads for EnsembleThreads within computeTWA
+        t, Szs = let
+            # Temporarily set JULIA_NUM_THREADS for this scope
+            old_threads = get(ENV, "JULIA_NUM_THREADS", string(n_threads_total))
+            ENV["JULIA_NUM_THREADS"] = string(threads_per_γ)
+            result = computeTWA(nAtoms, tf, nT, nTraj, dt, Ω, Δ, V, Γ, γ)
+            ENV["JULIA_NUM_THREADS"] = old_threads  # Restore original
+            result
+        end
         @save "$(data_folder)/sz_mean_steady_for_$(case)D,Ω=$(Ω),Δ=$(Δ),γ=$(γ).jld2" t Szs compress=true
     end
 end
