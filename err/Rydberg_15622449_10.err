@@ -1,10 +1,9 @@
 GC error (probable corruption)
-Allocations: 16004456840 (Pool: 16004455795; Big: 1045); GC: 7980
+Allocations: 247334293500 (Pool: 247334292387; Big: 1113); GC: 125259
+<?#0x150807518040::(nil)>
 
-!!! ERROR in jl_ -- ABORTING !!!
-
-[710508] signal 6 (-6): Aborted
-in expression starting at /home/quw51vuk/Rydberg_facilitation/main.jl:134
+[752393] signal 6 (-6): Aborted
+in expression starting at /home/quw51vuk/Rydberg_facilitation/main.jl:154
 gsignal at /lib64/libc.so.6 (unknown line)
 abort at /lib64/libc.so.6 (unknown line)
 gc_dump_queue_and_abort at /cache/build/tester-amdci5-12/julialang/julia-release-1-dot-11/src/gc.c:2079
@@ -14,5 +13,5 @@ gc_mark_loop_parallel at /cache/build/tester-amdci5-12/julialang/julia-release-1
 jl_parallel_gc_threadfun at /cache/build/tester-amdci5-12/julialang/julia-release-1-dot-11/src/scheduler.c:151
 start_thread at /lib64/libpthread.so.0 (unknown line)
 clone at /lib64/libc.so.6 (unknown line)
-Allocations: 16004456840 (Pool: 16004455795; Big: 1045); GC: 7980
-/var/spool/slurmd/job15620918/slurm_script: line 16: 710508 Aborted                 (core dumped) ~/julia-1.11.2/bin/julia -t 16 main.jl ${id}
+Allocations: 247334293500 (Pool: 247334292387; Big: 1113); GC: 125259
+/var/spool/slurmd/job15622462/slurm_script: line 16: 752393 Aborted                 (core dumped) ~/julia-1.11.2/bin/julia -t 16 main.jl ${id}
