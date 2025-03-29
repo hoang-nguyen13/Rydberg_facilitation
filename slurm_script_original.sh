@@ -7,7 +7,7 @@
 #SBATCH -e err/%x_%A_%a.err
 #SBATCH -o out/%x_%A_%a.out
 #SBATCH --mem=0
-#SBATCH --array=0-20
+#SBATCH --array=0-70
 
 id=${SLURM_ARRAY_TASK_ID}
 
