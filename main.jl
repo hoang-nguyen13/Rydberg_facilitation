@@ -99,9 +99,9 @@ end
 Δ = 2000 * Γ
 V = Δ
 nAtoms = 400
-tf = 25
+tf = 30
 nT = 400
-nTraj = 1
+nTraj = 100
 case = 2
 
 if case == 1
