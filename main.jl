@@ -83,7 +83,7 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ)
     p = (Ω, Δ, V, Γ, γ, nAtoms, neighbors, dϕ_drift_sum)
     prob = SDEProblem(drift!, diffusion!, u0, tspan, p)
     ensemble_prob = EnsembleProblem(prob; prob_func=(prob, i, repeat) -> prob_func(prob, i, repeat, u0))
-    sol = solve(ensemble_prob, SRIW1(); saveat=tSave, trajectories=nTraj, maxiters=1e7, abstol=1e-3, reltol=1e-3, dtmax=0.1)
+    sol = solve(ensemble_prob, SRIW1(); saveat=tSave, trajectories=nTraj, maxiters=1e7, abstol=1e-3, reltol=1e-3, dtmax=0.0001)
 
     # Convert EnsembleSolution to 3D array: [2*nAtoms, nT, nTraj]
     sol_array = zeros(2 * nAtoms, nT, nTraj)
