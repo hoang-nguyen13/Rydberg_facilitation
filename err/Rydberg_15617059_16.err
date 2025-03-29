@@ -1,0 +1,43 @@
+
+[659756] signal 11 (1): Segmentation fault
+in expression starting at /home/quw51vuk/Rydberg_facilitation/main.jl:124
+jl_object_id__cold at /cache/build/tester-amdci5-12/julialang/julia-release-1-dot-11/src/builtins.c:441
+jl_idset_peek_bp at /cache/build/tester-amdci5-12/julialang/julia-release-1-dot-11/src/idset.c:34
+jl_idset_get at /cache/build/tester-amdci5-12/julialang/julia-release-1-dot-11/src/idset.c:40
+jl_as_global_root at /cache/build/tester-amdci5-12/julialang/julia-release-1-dot-11/src/staticdata.c:2521 [inlined]
+jl_as_global_root at /cache/build/tester-amdci5-12/julialang/julia-release-1-dot-11/src/staticdata.c:2501
+inst_datatype_inner at /cache/build/tester-amdci5-12/julialang/julia-release-1-dot-11/src/jltypes.c:2115
+jl_inst_arg_tuple_type at /cache/build/tester-amdci5-12/julialang/julia-release-1-dot-11/src/jltypes.c:2338
+arg_type_tuple at /cache/build/tester-amdci5-12/julialang/julia-release-1-dot-11/src/gf.c:2278 [inlined]
+jl_lookup_generic_ at /cache/build/tester-amdci5-12/julialang/julia-release-1-dot-11/src/gf.c:3074 [inlined]
+ijl_apply_generic at /cache/build/tester-amdci5-12/julialang/julia-release-1-dot-11/src/gf.c:3121
+drift! at /home/quw51vuk/Rydberg_facilitation/main.jl:56
+SDEFunction at /home/quw51vuk/.julia/packages/SciMLBase/elLNZ/src/scimlfunctions.jl:2510 [inlined]
+perform_step! at /home/quw51vuk/.julia/packages/StochasticDiffEq/OmgKe/src/perform_step/sri.jl:198
+solve! at /home/quw51vuk/.julia/packages/StochasticDiffEq/OmgKe/src/solve.jl:694
+#__solve#107 at /home/quw51vuk/.julia/packages/StochasticDiffEq/OmgKe/src/solve.jl:7
+__solve at /home/quw51vuk/.julia/packages/StochasticDiffEq/OmgKe/src/solve.jl:1 [inlined]
+__solve at /home/quw51vuk/.julia/packages/StochasticDiffEq/OmgKe/src/solve.jl:1 [inlined]
+__solve at /home/quw51vuk/.julia/packages/StochasticDiffEq/OmgKe/src/solve.jl:1 [inlined]
+__solve at /home/quw51vuk/.julia/packages/StochasticDiffEq/OmgKe/src/solve.jl:1 [inlined]
+__solve at /home/quw51vuk/.julia/packages/StochasticDiffEq/OmgKe/src/solve.jl:1 [inlined]
+#solve_call#35 at /home/quw51vuk/.julia/packages/DiffEqBase/DG18l/src/solve.jl:635
+solve_call at /home/quw51vuk/.julia/packages/DiffEqBase/DG18l/src/solve.jl:592
+unknown function (ip: 0x14d3193566a5)
+#solve_up#44 at /home/quw51vuk/.julia/packages/DiffEqBase/DG18l/src/solve.jl:1142
+solve_up at /home/quw51vuk/.julia/packages/DiffEqBase/DG18l/src/solve.jl:1120 [inlined]
+#solve#42 at /home/quw51vuk/.julia/packages/DiffEqBase/DG18l/src/solve.jl:1057
+solve at /home/quw51vuk/.julia/packages/DiffEqBase/DG18l/src/solve.jl:1047
+unknown function (ip: 0x14d319334266)
+#batch_func#681 at /home/quw51vuk/.julia/packages/SciMLBase/elLNZ/src/ensemble/basic_ensemble_solve.jl:193
+batch_func at /home/quw51vuk/.julia/packages/SciMLBase/elLNZ/src/ensemble/basic_ensemble_solve.jl:180 [inlined]
+#694 at /home/quw51vuk/.julia/packages/SciMLBase/elLNZ/src/ensemble/basic_ensemble_solve.jl:271 [inlined]
+macro expansion at /home/quw51vuk/.julia/packages/SciMLBase/elLNZ/src/ensemble/basic_ensemble_solve.jl:281 [inlined]
+#1370#threadsfor_fun#697 at ./threadingconstructs.jl:253
+#1370#threadsfor_fun at ./threadingconstructs.jl:220 [inlined]
+#1 at ./threadingconstructs.jl:154
+unknown function (ip: 0x14d31932f14f)
+jl_apply at /cache/build/tester-amdci5-12/julialang/julia-release-1-dot-11/src/julia.h:2157 [inlined]
+start_task at /cache/build/tester-amdci5-12/julialang/julia-release-1-dot-11/src/task.c:1202
+Allocations: 64661261543 (Pool: 64661260498; Big: 1045); GC: 27963
+/var/spool/slurmd/job15617076/slurm_script: line 16: 659756 Segmentation fault      (core dumped) ~/julia-1.11.2/bin/julia -t 16 main.jl ${id}

@@ -1,0 +1,5 @@
+Directory exists: /home/quw51vuk/Rydberg_facilitation/results_data/atoms=400,Δ=2000,γ=0.001
+Computing for nAtoms = 400, γ = 0.001, Ω = 1
+Starting TWA computation...
+TWA computation finished.
+File saved successfully: /home/quw51vuk/Rydberg_facilitation/results_data/atoms=400,Δ=2000,γ=0.001/sz_mean_steady_for_2D,Ω=1,Δ=2000,γ=0.001.jld2
