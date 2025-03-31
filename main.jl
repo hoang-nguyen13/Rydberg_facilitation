@@ -102,10 +102,10 @@ end
 Γ = 1
 Δ = 2000 * Γ
 V = Δ
-nAtoms = 16
+nAtoms = 400
 tf = 60
 nT = 400
-nTraj = 1
+nTraj = 200
 case = 2
 
 if case == 1
@@ -114,7 +114,7 @@ else
     Ω_values = vcat(0:1:15, 15.25:0.15:22.45, 25:1:30)
 end
 
-γ_values = [1e-3]
+γ_values = [1e-3,1e-1,10,100]
 
 script_dir = @__DIR__
 
