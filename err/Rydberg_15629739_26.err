@@ -1,4 +1,0 @@
-
-[1069085] signal 11 (128): Segmentation fault
-in expression starting at /home/quw51vuk/Rydberg_facilitation/main.jl:128
-slurmstepd: error: *** JOB 15629766 ON node394 CANCELLED AT 2025-03-31T10:00:19 ***

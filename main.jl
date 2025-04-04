@@ -56,7 +56,7 @@ function drift!(du, u, p, t)
 end
 
 function diffusion!(du, u, p, t)
-    Ω, Δ, V, Γ, γ = p
+    Ω, Δ, V, Γ, γ, nAtoms, neighbors, dϕ_drift_sum = p
     θ = u[1:nAtoms]
     sqrt_3 = sqrt(3)
     term1 = 1
@@ -84,18 +84,15 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ)
     prob = SDEProblem(drift!, diffusion!, u0, tspan, p)
     ensemble_prob = EnsembleProblem(prob; prob_func=(prob, i, repeat) -> prob_func(prob, i, repeat, u0))
     sol = solve(ensemble_prob, SRIW1(); saveat=tSave, trajectories=nTraj, maxiters=1e7, abstol=1e-3, reltol=1e-3, dtmax=0.0001)
-
-    # Convert EnsembleSolution to 3D array: [2*nAtoms, nT, nTraj]
+    
     sol_array = zeros(2 * nAtoms, nT, nTraj)
     for i in 1:nTraj
-        # Each sol[i].u is a Vector{Vector{Float64}}, where each inner vector is 2*nAtoms long
         for (j, u) in enumerate(sol[i].u)
             sol_array[:, j, i] = u
         end
     end
-
-    println("Converted sol to array with dimensions: $(size(sol_array))")
-    return tSave, sol_array  # Return the 3D array instead of EnsembleSolution
+    
+    return tSave, sol_array
 end
 
 # Parameters
@@ -103,9 +100,9 @@ end
 Δ = 2000 * Γ
 V = Δ
 nAtoms = 400
-tf = 60
+tf = 70
 nT = 400
-nTraj = 200
+nTraj = 300
 case = 2
 
 if case == 1
@@ -114,7 +111,7 @@ else
     Ω_values = vcat(0:1:15, 15.25:0.15:22.45, 25:1:30)
 end
 
-γ_values = [1e-3,1e-1,10,100]
+γ_values = [1e-3, 0.1, 10, 100]
 
 script_dir = @__DIR__
 
@@ -124,8 +121,27 @@ task_id = parse(Int, ARGS[1])
 
 julia_path = joinpath(homedir(), "julia-1.11.2", "bin", "julia")
 
-# Loop over γ values
+checkpoint_file = joinpath(script_dir, "checkpoints/checkpoint_Ω=$(Ω).jld2")
+if !isdir(dirname(checkpoint_file))
+    mkpath(dirname(checkpoint_file))
+end
+
+completed_γ = Float64[]
+if isfile(checkpoint_file)
+    jldopen(checkpoint_file, "r") do file
+        completed_γ = file["completed_γ"]
+    end
+    println("Loaded completed γ values for Ω = $Ω: $completed_γ")
+    flush(stdout)
+end
+
 for γ in γ_values
+    if γ in completed_γ
+        println("Skipping γ = $γ for Ω = $Ω (already completed)")
+        flush(stdout)
+        continue
+    end
+
     data_folder = joinpath(script_dir, "results_data/atoms=$(nAtoms),Δ=$(Δ),γ=$(γ)")
     if !isdir(data_folder)
         mkpath(data_folder)
@@ -139,47 +155,98 @@ for γ in γ_values
     println("Computing for nAtoms = $nAtoms, γ = $γ, Ω = $Ω")
     flush(stdout)
 
-    println("Starting TWA computation for γ = $γ...")
-    flush(stdout)
-    t, sol_array = computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ)
-    println("TWA computation finished for γ = $γ.")
-    flush(stdout)
+    max_retries = 2
+    attempt = 1
+    success = false
+    t = nothing
+    sol_array = nothing
+    sol_filename = nothing
 
-    println("sol_array dimensions: $(size(sol_array))")
-    flush(stdout)
+    while attempt <= max_retries && !success
+        println("Attempt $attempt of $max_retries for γ = $γ, Ω = $Ω...")
+        flush(stdout)
 
-    # Save sol as the 3D array
-    sol_filename = "$(data_folder)/temp_sol_$(case)D,Ω=$(Ω),Δ=$(Δ),γ=$(γ).jld2"
-    try
-        jldsave(sol_filename; t=t, sol=sol_array)
-        println("Solution saved temporarily: $sol_filename")
-        flush(stdout)
-    catch e
-        println("Error saving solution: $e")
-        flush(stdout)
-    end
-
-    # Call compute_sz.jl with nAtoms and nTraj
-    compute_sz_script = joinpath(script_dir, "compute_sz.jl")
-    if isfile(compute_sz_script)
-        cmd = `$julia_path $compute_sz_script $sol_filename $nAtoms $nTraj`
-        println("Executing command: $cmd")
-        flush(stdout)
         try
-            run(cmd)
+            println("Starting TWA computation for γ = $γ...")
+            flush(stdout)
+            t, sol_array = computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ)
+            println("TWA computation finished for γ = $γ.")
+            flush(stdout)
+
+            sol_filename = "$(data_folder)/temp_sol_$(case)D,Ω=$(Ω),Δ=$(Δ),γ=$(γ).jld2"
+            jldsave(sol_filename; t=t, sol=sol_array)
+            println("Solution saved temporarily: $sol_filename")
+            flush(stdout)
+
+            compute_sz_script = joinpath(script_dir, "compute_sz.jl")
+            if !isfile(compute_sz_script)
+                println("Error: compute_sz.jl not found at $compute_sz_script")
+                flush(stdout)
+                error("compute_sz.jl missing")
+            end
+            cmd = `$julia_path $compute_sz_script $sol_filename $nAtoms $nTraj`
+            println("Executing command: $cmd")
+            flush(stdout)
+            
+            process = run(cmd; wait=true)
+            if process.exitcode != 0
+                error("compute_sz.jl failed with exit code $(process.exitcode)")
+            end
             println("Sz computation completed for γ = $γ.")
             flush(stdout)
-        catch e
-            println("Error running compute_sz.jl: $e")
+
+            push!(completed_γ, γ)
+            jldsave(checkpoint_file; completed_γ)
+            println("Checkpoint updated: γ = $γ completed for Ω = $Ω")
             flush(stdout)
+
+            success = true
+
+        catch e
+            println("Error in attempt $attempt for γ = $γ, Ω = $Ω: $e")
+            flush(stdout)
+            attempt += 1
+            if attempt <= max_retries
+                println("Retrying after cleanup...")
+                flush(stdout)
+                t = nothing
+                sol_array = nothing
+                if isfile(sol_filename)
+                    try
+                        rm(sol_filename)
+                        println("Removed potentially corrupted file: $sol_filename")
+                    catch rm_err
+                        println("Error removing file: $rm_err")
+                    end
+                end
+                GC.gc(true)
+                sleep(5)
+            else
+                println("Max retries reached for γ = $γ, Ω = $Ω. Skipping this γ.")
+                flush(stdout)
+                t = nothing
+                sol_array = nothing
+                if isfile(sol_filename)
+                    try
+                        rm(sol_filename)
+                    catch rm_err
+                        println("Error removing file: $rm_err")
+                    end
+                end
+                GC.gc(true)
+                sleep(1)
+                break
+            end
         end
-    else
-        println("Error: compute_sz.jl not found at $compute_sz_script")
-        flush(stdout)
     end
 
-    # Clean up
     println("Cleaning up for γ = $γ...")
+    flush(stdout)
+    t = nothing
+    sol_array = nothing
+    GC.gc()
+    sleep(1)
+    println("Cleanup complete for γ = $γ.")
     flush(stdout)
 end
 
