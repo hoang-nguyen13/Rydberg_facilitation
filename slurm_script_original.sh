@@ -34,6 +34,29 @@ get_completed_gamma() {
     fi
 }
 
+# Function to check if all γ are completed
+all_gamma_completed() {
+    local completed_gamma="$1"
+    for gamma in $GAMMA_VALUES; do
+        if ! echo "$completed_gamma" | grep -q "$gamma"; then
+            return 1  # Not all completed
+        fi
+    done
+    return 0  # All completed
+}
+
+# Function to find incomplete γ values
+find_incomplete_gamma() {
+    local completed_gamma="$1"
+    for gamma in $GAMMA_VALUES; do
+        if ! echo "$completed_gamma" | grep -q "$gamma"; then
+            echo "$gamma"
+            return
+        fi
+    done
+    echo ""
+}
+
 # Function to find the failed γ
 find_failed_gamma() {
     local completed_gamma="$1"
@@ -46,13 +69,7 @@ find_failed_gamma() {
         fi
     fi
     
-    for gamma in $GAMMA_VALUES; do
-        if ! echo "$completed_gamma" | grep -q "$gamma"; then
-            echo "$gamma"
-            return
-        fi
-    done
-    echo ""
+    echo "$(find_incomplete_gamma "$completed_gamma")"
 }
 
 # Function to run Julia and capture exit code
@@ -63,22 +80,40 @@ run_julia() {
     if [ -z "$gamma" ]; then
         $JULIA --project=/home/quw51vuk/Rydberg_facilitation -t 13 $SCRIPT $id
     else
-        echo "Retrying only γ = $gamma for TASK_ID=$id" >> $SLURM_SUBMIT_DIR/out/%x_%A_%a.out
+        echo "Running only γ = $gamma for TASK_ID=$id" >> $SLURM_SUBMIT_DIR/out/%x_%A_%a.out
         $JULIA --project=/home/quw51vuk/Rydberg_facilitation -t 13 $SCRIPT $id $gamma
     fi
     return $?
 }
+
+# Trap signals to ensure proper exit
+trap 'echo "Job terminated unexpectedly (signal caught) for TASK_ID=$id at $(date)" >> $SLURM_SUBMIT_DIR/err/%x_%A_%a.err; exit 1' SIGTERM SIGINT SIGABRT SIGSEGV
 
 # Ensure checkpoint directory exists
 if [ ! -d "$CHECKPOINT_DIR" ]; then
     mkdir -p "$CHECKPOINT_DIR"
 fi
 
+# Check checkpoint before running
+COMPLETED_GAMMA=$(get_completed_gamma)
+echo "Initial completed γ values for Ω=$id: $COMPLETED_GAMMA" >> $SLURM_SUBMIT_DIR/out/%x_%A_%a.out
+
+if all_gamma_completed "$COMPLETED_GAMMA"; then
+    echo "All γ values already completed for Ω=$id. Skipping run." >> $SLURM_SUBMIT_DIR/out/%x_%A_%a.out
+    exit 0
+fi
+
 # Main retry loop
 ATTEMPT=1
 while [ $ATTEMPT -le $MAX_RETRIES ]; do
-    if [ $ATTEMPT -eq 1 ]; then
-        run_julia $ATTEMPT ""
+    # On first attempt, run only the first incomplete γ if any are completed
+    if [ $ATTEMPT -eq 1 ] && [ -n "$COMPLETED_GAMMA" ]; then
+        NEXT_GAMMA=$(find_incomplete_gamma "$COMPLETED_GAMMA")
+        if [ -n "$NEXT_GAMMA" ]; then
+            run_julia $ATTEMPT "$NEXT_GAMMA"
+        else
+            run_julia $ATTEMPT ""
+        fi
     else
         run_julia $ATTEMPT "$LAST_GAMMA"
     fi
@@ -104,6 +139,7 @@ while [ $ATTEMPT -le $MAX_RETRIES ]; do
 
     ATTEMPT=$((ATTEMPT + 1))
     if [ $ATTEMPT -le $MAX_RETRIES ]; then
+ificantly less memory-intensive task.
         echo "Retrying after 5 seconds..." >> $SLURM_SUBMIT_DIR/err/%x_%A_%a.err
         sleep 5
     else
