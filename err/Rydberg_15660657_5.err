@@ -1,5 +1,0 @@
-malloc(): unsorted double linked list corrupted
-
-[1637257] signal 6 (-6): Aborted
-in expression starting at /home/quw51vuk/Rydberg_facilitation/main.jl:138
-slurmstepd: error: *** JOB 15660663 ON node442 CANCELLED AT 2025-04-02T13:36:15 ***

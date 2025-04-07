@@ -49,8 +49,8 @@ function drift!(du, u, p, t)
     end
     cotθ = cot.(θ)
     cscθ = csc.(θ)
-    dθ_drift = -2 .* Ω .* sin.(ϕ) .+ Γ .* (cotθ .+ cscθ ./ sqrt_3)
-    dϕ_drift = -2 .* Ω .* cotθ .* cos.(ϕ) .+ (V / 2) .* dϕ_drift_sum .- Δ
+    dθ_drift = 2 .* Ω .* sin.(ϕ) .+ Γ .* (cotθ .+ cscθ ./ sqrt_3)
+    dϕ_drift = 2 .* Ω .* cotθ .* cos.(ϕ) .+ (V / 2) .* dϕ_drift_sum .- Δ
     du[1:nAtoms] .= dθ_drift
     du[nAtoms+1:2*nAtoms] .= dϕ_drift
 end
@@ -102,7 +102,7 @@ V = Δ
 nAtoms = 400
 tf = 70
 nT = 400
-nTraj = 300
+nTraj = 5
 case = 2
 
 if case == 1
