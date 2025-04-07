@@ -44,7 +44,7 @@ function drift!(du, u, p, t)
     elseif case == 2
         for n in eachindex(neighbors)
             neighbor_indices = neighbors[n]
-            dϕ_drift_sum[n] = sum(1 .+ sqrt_3 * cos.(θ[neighbor_indices]))
+            dϕ_drift_sum[n] = sum(1 .- sqrt_3 * cos.(θ[neighbor_indices]))
         end
     end
     cotθ = cot.(θ)
