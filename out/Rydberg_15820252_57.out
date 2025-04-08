@@ -1,0 +1,6 @@
+Loaded completed γ values for Ω = 21.4: Float64[]
+Incomplete γ values to process for Ω = 21.4: [0.001, 0.1, 10.0, 100.0]
+Computing for nAtoms = 400, γ = 0.001, Ω = 21.4
+Directory exists: /home/quw51vuk/Rydberg_facilitation/results_data/atoms=400,Δ=2000,γ=0.001
+Attempt 1 of 2 for γ = 0.001, Ω = 21.4...
+Starting TWA computation for γ = 0.001...
