@@ -56,7 +56,7 @@ function drift!(du, u, p, t)
 end
 
 function diffusion!(du, u, p, t)
-    Ω, Δ, V, Γ, γ, nAtoms, neighbors, dϕ_drift_sum = p
+    Ω, Δ, V, Γ, γ = p
     θ = u[1:nAtoms]
     sqrt_3 = sqrt(3)
     term1 = 1
@@ -95,7 +95,6 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ)
     return tSave, sol_array
 end
 
-# Parameters
 Γ = 1
 Δ = 2000 * Γ
 V = Δ
@@ -114,45 +113,45 @@ end
 γ_values = [1e-3, 0.1, 10, 100]
 
 script_dir = @__DIR__
-
 task_id = parse(Int, ARGS[1])
 Ω_idx = task_id + 1
 Ω = Ω_values[Ω_idx]
 
-julia_path = joinpath(homedir(), "julia-1.11.2", "bin", "julia")
-
-checkpoint_file = joinpath(script_dir, "checkpoints/checkpoint_Ω=$(Ω).jld2")
+checkpoint_file = joinpath(script_dir, "checkpoints", "checkpoint_Ω=$(Ω).jld2")
 if !isdir(dirname(checkpoint_file))
     mkpath(dirname(checkpoint_file))
 end
 
-completed_γ = Float64[]
-if isfile(checkpoint_file)
-    jldopen(checkpoint_file, "r") do file
-        completed_γ = file["completed_γ"]
-    end
-    println("Loaded completed γ values for Ω = $Ω: $completed_γ")
+# Load completed γ values
+completed_γ = isfile(checkpoint_file) ? jldopen(checkpoint_file, "r")["completed_γ"] : Float64[]
+println("Loaded completed γ values for Ω = $Ω: $completed_γ")
+flush(stdout)
+
+# Find incomplete γ values
+incomplete_γ = filter(γ -> γ ∉ completed_γ, γ_values)
+println("Incomplete γ values to process for Ω = $Ω: $incomplete_γ")
+flush(stdout)
+
+if isempty(incomplete_γ)
+    println("All γ values completed for Ω = $Ω. Exiting.")
     flush(stdout)
+    exit(0)
 end
 
-for γ in γ_values
-    if γ in completed_γ
-        println("Skipping γ = $γ for Ω = $Ω (already completed)")
-        flush(stdout)
-        continue
-    end
+julia_path = joinpath(homedir(), "julia-1.11.2", "bin", "julia")
 
-    data_folder = joinpath(script_dir, "results_data/atoms=$(nAtoms),Δ=$(Δ),γ=$(γ)")
+# Process each incomplete γ with retry logic
+for γ in incomplete_γ
+    println("Computing for nAtoms = $nAtoms, γ = $γ, Ω = $Ω")
+    flush(stdout)
+
+    data_folder = joinpath(script_dir, "results_data", "atoms=$(nAtoms),Δ=$(Δ),γ=$(γ)")
     if !isdir(data_folder)
         mkpath(data_folder)
         println("Created directory: $data_folder")
-        flush(stdout)
     else
         println("Directory exists: $data_folder")
-        flush(stdout)
     end
-
-    println("Computing for nAtoms = $nAtoms, γ = $γ, Ω = $Ω")
     flush(stdout)
 
     max_retries = 2
@@ -179,11 +178,6 @@ for γ in γ_values
             flush(stdout)
 
             compute_sz_script = joinpath(script_dir, "compute_sz.jl")
-            if !isfile(compute_sz_script)
-                println("Error: compute_sz.jl not found at $compute_sz_script")
-                flush(stdout)
-                error("compute_sz.jl missing")
-            end
             cmd = `$julia_path $compute_sz_script $sol_filename $nAtoms $nTraj`
             println("Executing command: $cmd")
             flush(stdout)
@@ -201,54 +195,34 @@ for γ in γ_values
             flush(stdout)
 
             success = true
-
         catch e
             println("Error in attempt $attempt for γ = $γ, Ω = $Ω: $e")
             flush(stdout)
             attempt += 1
             if attempt <= max_retries
-                println("Retrying after cleanup...")
+                println("Retrying γ = $γ after 5 seconds...")
                 flush(stdout)
-                t = nothing
-                sol_array = nothing
-                if isfile(sol_filename)
-                    try
-                        rm(sol_filename)
-                        println("Removed potentially corrupted file: $sol_filename")
-                    catch rm_err
-                        println("Error removing file: $rm_err")
-                    end
-                end
-                GC.gc(true)
                 sleep(5)
-            else
-                println("Max retries reached for γ = $γ, Ω = $Ω. Skipping this γ.")
-                flush(stdout)
                 t = nothing
                 sol_array = nothing
-                if isfile(sol_filename)
-                    try
-                        rm(sol_filename)
-                    catch rm_err
-                        println("Error removing file: $rm_err")
-                    end
-                end
-                GC.gc(true)
-                sleep(1)
-                break
+                GC.gc()
+            else
+                println("Max retries reached for γ = $γ, Ω = $Ω. Signaling retry to shell.")
+                flush(stdout)
+                exit(2)  # Special exit code to signal retry
             end
+        finally
+            println("Cleaning up for γ = $γ...")
+            flush(stdout)
+            t = nothing
+            sol_array = nothing
+            GC.gc()
+            sleep(1)
+            println("Cleanup complete for γ = $γ.")
+            flush(stdout)
         end
     end
-
-    println("Cleaning up for γ = $γ...")
-    flush(stdout)
-    t = nothing
-    sol_array = nothing
-    GC.gc()
-    sleep(1)
-    println("Cleanup complete for γ = $γ.")
-    flush(stdout)
 end
 
-println("All γ values processed for Ω = $Ω.")
+println("All incomplete γ values processed for Ω = $Ω.")
 flush(stdout)
