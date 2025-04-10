@@ -6,6 +6,7 @@ using DifferentialEquations
 using Random
 using ArgParse
 using Dates
+BLAS.set_num_threads(1)
 
 function sampleSpinZPlus(n)
     θ = fill(acos(1 / sqrt(3)), n)
@@ -50,7 +51,7 @@ function drift!(du, u, p, t)
     cotθ = cot.(θ)
     cscθ = csc.(θ)
     dθ_drift = 2 .* Ω .* sin.(ϕ) .+ Γ .* (cotθ .+ cscθ ./ sqrt_3)
-    dϕ_drift = 2 .* Ω .* cotθ .* cos.(ϕ) .+ (V / 2) .* dϕ_drift_sum .- Δ
+    dϕ_drift = 2 .* Ω .* cotθ .* cos.(ϕ) .- (V / 2) .* dϕ_drift_sum .+ Δ
     du[1:nAtoms] .= dθ_drift
     du[nAtoms+1:2*nAtoms] .= dϕ_drift
 end
@@ -99,18 +100,18 @@ end
 Δ = 2000 * Γ
 V = Δ
 nAtoms = 400
-tf = 80
+tf = 160
 nT = 400
-nTraj = 20
+nTraj = 50
 case = 2
 
 if case == 1
     Ω_values = 0:1:40
 else
-    Ω_values = vcat(0:1:15, 15.25:0.15:22.45, 25:1:30)
+    Ω_values = 0:1:30 #vcat(0:1:15, 15.25:0.15:22.90, 23:1:30)
 end
 
-γ_values = [1e-3, 0.1, 10, 100]
+γ_values = [0.1]
 
 script_dir = @__DIR__
 task_id = parse(Int, ARGS[1])
