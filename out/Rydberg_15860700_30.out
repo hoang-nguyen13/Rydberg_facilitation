@@ -1,0 +1,6 @@
+Loaded completed γ values for Ω = 30: Float64[]
+Incomplete γ values to process for Ω = 30: [0.1]
+Computing for nAtoms = 400, γ = 0.1, Ω = 30
+Created directory: /home/quw51vuk/Rydberg_facilitation/results_data/atoms=400,Δ=1000,γ=0.1
+Attempt 1 of 2 for γ = 0.1, Ω = 30...
+Starting TWA computation for γ = 0.1...

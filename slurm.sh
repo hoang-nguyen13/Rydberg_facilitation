@@ -1,13 +1,15 @@
 #!/bin/bash
 
 #SBATCH -J Rydberg
-#SBATCH --cpus-per-task=16
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=1
 #SBATCH -t 200:00:00
 #SBATCH -p epyc-256
 #SBATCH -e err/%x_%A_%a.err
 #SBATCH -o out/%x_%A_%a.out
 #SBATCH --mem=0
-#SBATCH --array=0-30
+#SBATCH --array=0-42
+#SBATCH --tasks-per-node=16
 
 id=${SLURM_ARRAY_TASK_ID}
 
@@ -19,7 +21,7 @@ MAX_RETRIES=2
 run_julia() {
     local attempt=$1
     echo "Attempt $attempt of $MAX_RETRIES for TASK_ID=$id at $(date)" >> $SLURM_SUBMIT_DIR/out/%x_%A_%a.out
-    $JULIA --project=/home/quw51vuk/Rydberg_facilitation -t 10 --check-bounds=yes $SCRIPT $id
+    $JULIA --project=/home/quw51vuk/Rydberg_facilitation -t 16 --check-bounds=yes $SCRIPT $id
     return $?
 }
 
