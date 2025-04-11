@@ -1,0 +1,6 @@
+┌ Warning: attempting to remove probably stale pidfile
+│   path = "/home/quw51vuk/.julia/compiled/v1.11/BoundaryValueDiffEq/Levrg_Lurqn.ji.pidfile"
+└ @ FileWatching.Pidfile ~/julia-1.11.2/share/julia/stdlib/v1.11/FileWatching/src/pidfile.jl:249
+┌ Warning: attempting to remove probably stale pidfile
+│   path = "/home/quw51vuk/.julia/compiled/v1.11/DifferentialEquations/UQdwS_Lurqn.ji.pidfile"
+└ @ FileWatching.Pidfile ~/julia-1.11.2/share/julia/stdlib/v1.11/FileWatching/src/pidfile.jl:249

@@ -1,0 +1,9 @@
+ERROR: LoadError: BoundsError: attempt to access 45-element Vector{Float64} at index [46]
+Stacktrace:
+ [1] throw_boundserror(A::Vector{Float64}, I::Tuple{Int64})
+   @ Base ./essentials.jl:14
+ [2] getindex(A::Vector{Float64}, i::Int64)
+   @ Base ./essentials.jl:916
+ [3] top-level scope
+   @ ~/Rydberg_facilitation/main.jl:119
+in expression starting at /home/quw51vuk/Rydberg_facilitation/main.jl:119

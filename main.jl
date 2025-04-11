@@ -102,13 +102,13 @@ V = Δ
 nAtoms = 400
 tf = 160
 nT = 400
-nTraj = 500
+nTraj = 1
 case = 2
 
 if case == 1
     Ω_values = 0:1:40
 else
-    Ω_values = vcat(0:4:17, 17.5:0.05:19, 20:2:30)
+    Ω_values = vcat(0:4:17, 17.5:0.05:19, 20:2:30, 40:10:60)
 end
 
 γ_values = [0.1]
