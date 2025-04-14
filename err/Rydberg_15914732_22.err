@@ -1,0 +1,10 @@
+Precompiling JLD2...
+   4481.2 ms  ✓ Requires
+   4979.3 ms  ✓ OrderedCollections
+   4989.2 ms  ✓ TranscodingStreams
+   6070.6 ms  ✓ Preferences
+   2139.1 ms  ✓ PrecompileTools
+  15124.5 ms  ✓ MacroTools
+  18329.8 ms  ✓ FileIO
+  77456.2 ms  ✓ JLD2
+  8 dependencies successfully precompiled in 101 seconds. 24 already precompiled.

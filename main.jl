@@ -84,7 +84,13 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ)
     p = (Ω, Δ, V, Γ, γ, nAtoms, neighbors, dϕ_drift_sum)
     prob = SDEProblem(drift!, diffusion!, u0, tspan, p)
     ensemble_prob = EnsembleProblem(prob; prob_func=(prob, i, repeat) -> prob_func(prob, i, repeat, u0))
-    sol = solve(ensemble_prob, SRIW1(); saveat=tSave, trajectories=nTraj, maxiters=1e7, abstol=1e-3, reltol=1e-3, dtmax=0.0001)
+    sol = solve(ensemble_prob, SRIW1(), EnsembleThreads(); 
+		saveat=tSave, 
+		trajectories=nTraj, 
+		maxiters=1e7, 
+		abstol=1e-3, 
+		reltol=1e-3, 
+		dtmax=0.001)
     
     sol_array = zeros(2 * nAtoms, nT, nTraj)
     for i in 1:nTraj
@@ -102,16 +108,16 @@ V = Δ
 nAtoms = 400
 tf = 160
 nT = 400
-nTraj = 1
+nTraj = 3
 case = 2
 
 if case == 1
     Ω_values = 0:1:40
 else
-    Ω_values = vcat(0:4:17, 17.5:0.05:19, 20:2:30, 40:10:60)
+    Ω_values = vcat(0:4:17, 17.5:0.05:19, 20:2:30, 40)
 end
 
-γ_values = [0.1]
+γ_values = [0.1, 10, 100, 500, 1000]
 
 script_dir = @__DIR__
 task_id = parse(Int, ARGS[1])
