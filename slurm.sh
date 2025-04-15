@@ -7,7 +7,7 @@
 #SBATCH -e err/%x_%A_%a.err
 #SBATCH -o out/%x_%A_%a.out
 #SBATCH --mem-per-cpu=8G
-#SBATCH --array=0-42
+#SBATCH --array=0-40
 
 id=${SLURM_ARRAY_TASK_ID}
 
