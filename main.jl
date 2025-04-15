@@ -117,7 +117,7 @@ else
     Ω_values = 0:1:40 #vcat(0:4:17, 17.5:0.05:19, 20:2:30, 40)
 end
 
-γ_values = [50, 200, 1500]
+γ_values = [0.1, 10, 100, 500, 1000]
 
 script_dir = @__DIR__
 task_id = parse(Int, ARGS[1])
