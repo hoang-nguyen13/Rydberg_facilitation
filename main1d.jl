@@ -105,11 +105,11 @@ end
 Γ = 1
 Δ = 2000 * Γ
 V = Δ
-nAtoms = 100
+nAtoms = 900
 tf = 160
 nT = 400
 nTraj = 5
-case = 1
+case = 2
 
 Ω_values = 0:1:40
 γ_values = [0.1, 100, 500, 1000]
