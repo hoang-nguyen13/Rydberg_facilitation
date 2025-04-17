@@ -1,6 +1,0 @@
-Loaded completed γ values for Ω = 34: Float64[]
-Incomplete γ values to process for Ω = 34: [0.1, 10.0, 100.0, 500.0, 1000.0]
-Computing for nAtoms = 100, γ = 0.1, Ω = 34
-Directory exists: /home/quw51vuk/Rydberg_facilitation/results_data/atoms=100,Δ=2000,γ=0.1
-Attempt 1 of 2 for γ = 0.1, Ω = 34...
-Starting TWA computation for γ = 0.1...

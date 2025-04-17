@@ -68,12 +68,13 @@ function diffusion!(du, u, p, t)
     du[nAtoms+1:2*nAtoms] .= diffusion
 end
 
-function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ)
+function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
     tspan = (0, tf)
     tSave = LinRange(0, tf, nT)
     u0 = Vector{Float64}(undef, 2 * nAtoms)
     dϕ_drift_sum = zeros(nAtoms)
-    neighbors = get_neighbors_vectorized(nAtoms)
+    
+    neighbors = case == 2 ? get_neighbors_vectorized(nAtoms) : nothing
     p = (Ω, Δ, V, Γ, γ, nAtoms, neighbors, dϕ_drift_sum)
     
     prob = SDEProblem(drift!, diffusion!, u0, tspan, p)
@@ -105,11 +106,11 @@ end
 Γ = 1
 Δ = 2000 * Γ
 V = Δ
-nAtoms = 900
+nAtoms = 500
 tf = 160
 nT = 400
 nTraj = 5
-case = 2
+case = 1
 
 Ω_values = 0:1:40
 γ_values = [0.1, 100, 500, 1000]
@@ -135,7 +136,7 @@ flush(stdout)
 
 println("Starting TWA computation for γ = $γ...")
 flush(stdout)
-t, sol_array = computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ)
+t, sol_array = computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
 println("TWA computation finished for γ = $γ.")
 flush(stdout)
 
