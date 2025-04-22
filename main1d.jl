@@ -34,78 +34,38 @@ end
 
 function drift!(du, u, p, t)
     Ω, Δ, V, Γ, γ, nAtoms, neighbors, dϕ_drift_sum = p
+    θ = u[1:nAtoms]
+    ϕ = u[nAtoms+1:2*nAtoms]
     sqrt_3 = sqrt(3)
-    
-    # Zero out dϕ_drift_sum
-    for i in 1:length(dϕ_drift_sum)
-        dϕ_drift_sum[i] = 0.0
-    end
-    
-    # Compute dϕ_drift_sum and drift terms
+    fill!(dϕ_drift_sum, 0)
     if case == 1
-        # dϕ_drift_sum for case 1 (linear chain)
-        for i in 2:(nAtoms-1)
-            dϕ_drift_sum[i] = 2.0 + sqrt_3 * (cos(u[i-1]) + cos(u[i+1]))
-        end
-        dϕ_drift_sum[1] = 1.0 + sqrt_3 * cos(u[2])
-        dϕ_drift_sum[nAtoms] = 1.0 + sqrt_3 * cos(u[nAtoms-1])
-        
-        # Compute dθ_drift and dϕ_drift
-        for i in 1:nAtoms
-            θ_i = u[i]
-            ϕ_i = u[nAtoms + i]
-            cotθ_i = cot(θ_i)
-            cscθ_i = csc(θ_i)
-            
-            # dθ_drift = 2 * Ω * sin(ϕ_i) + Γ * (cotθ_i + cscθ_i / sqrt_3)
-            du[i] = 2.0 * Ω * sin(ϕ_i) + Γ * (cotθ_i + cscθ_i / sqrt_3)
-            
-            # dϕ_drift = 2 * Ω * cotθ_i * cos(ϕ_i) - V * dϕ_drift_sum[i] + Δ
-            du[nAtoms + i] = 2.0 * Ω * cotθ_i * cos(ϕ_i) - V * dϕ_drift_sum[i] + Δ
-        end
+        dϕ_drift_sum[2:end-1] .= 2 .+ sqrt_3 .* (cos.(θ[1:end-2]) .+ cos.(θ[3:end]))
+        dϕ_drift_sum[1] = 1 + sqrt_3 * cos(θ[2])
+        dϕ_drift_sum[end] = 1 + sqrt_3 * cos(θ[end-1])
     elseif case == 2
-        # Single loop for dϕ_drift_sum and drift terms
-        for i in 1:nAtoms
-            θ_i = u[i]
-            ϕ_i = u[nAtoms + i]
-            cotθ_i = cot(θ_i)
-            cscθ_i = csc(θ_i)
-            
-            # Compute dϕ_drift_sum[i]
-            sum_val = 0.0
-            for idx in neighbors[i]
-                sum_val += 1.0 + sqrt_3 * cos(u[idx])
-            end
-            dϕ_drift_sum[i] = sum_val
-            
-            # dθ_drift = 2 * Ω * sin(ϕ_i) + Γ * (cotθ_i + cscθ_i / sqrt_3)
-            du[i] = 2.0 * Ω * sin(ϕ_i) + Γ * (cotθ_i + cscθ_i / sqrt_3)
-            
-            # dϕ_drift = 2 * Ω * cotθ_i * cos(ϕ_i) - V * dϕ_drift_sum[i] + Δ
-            du[nAtoms + i] = 2.0 * Ω * cotθ_i * cos(ϕ_i) - V * dϕ_drift_sum[i] + Δ
+        for n in eachindex(neighbors)
+            neighbor_indices = neighbors[n]
+            dϕ_drift_sum[n] = sum(1 .+ sqrt_3 * cos.(θ[neighbor_indices]))
         end
     end
+    cotθ = cot.(θ)
+    cscθ = csc.(θ)
+    dθ_drift = 2 .* Ω .* sin.(ϕ) .+ Γ .* (cotθ .+ cscθ ./ sqrt_3)
+    dϕ_drift = 2 .* Ω .* cotθ .* cos.(ϕ) .- V .* dϕ_drift_sum .+ Δ
+    du[1:nAtoms] .= dθ_drift
+    du[nAtoms+1:2*nAtoms] .= dϕ_drift
 end
 
 function diffusion!(du, u, p, t)
     Ω, Δ, V, Γ, γ = p
+    θ = u[1:nAtoms]
     sqrt_3 = sqrt(3)
-    
-    # Compute diffusion for each atom
-    for i in 1:nAtoms
-        θ_i = u[i]
-        cotθ_i = cot(θ_i)
-        cscθ_i = csc(θ_i)
-        
-        term1 = 1.0
-        term2 = 2.0 * cotθ_i * cotθ_i
-        term3 = 2.0 * cotθ_i * cscθ_i / sqrt_3
-        diffusion_i = sqrt(Γ * (term1 + term2 + term3) + 4.0 * γ)
-        
-        # Set du
-        du[i] = 0.0
-        du[nAtoms + i] = diffusion_i
-    end
+    term1 = 1
+    term2 = 2 .* cot.(θ) .^ 2
+    term3 = 2 .* cot.(θ) .* csc.(θ) ./ sqrt_3
+    diffusion = sqrt.(Γ .* (term1 .+ term2 .+ term3) .+ 4 .* γ)
+    du[1:nAtoms] .= 0.0
+    du[nAtoms+1:2*nAtoms] .= diffusion
 end
 
 function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
@@ -197,4 +157,5 @@ flush(stdout)
 
 println("Computation completed for Ω = $Ω, γ = $γ.")
 flush(stdout)
+
 
