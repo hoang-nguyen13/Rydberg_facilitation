@@ -51,7 +51,7 @@ function drift!(du, u, p, t)
     cotθ = cot.(θ)
     cscθ = csc.(θ)
     dθ_drift = 2 .* Ω .* sin.(ϕ) .+ Γ .* (cotθ .+ cscθ ./ sqrt_3)
-    dϕ_drift = 2 .* Ω .* cotθ .* cos.(ϕ) .- (V / 2) .* dϕ_drift_sum .+ Δ
+    dϕ_drift = 2 .* Ω .* cotθ .* cos.(ϕ) .- V .* dϕ_drift_sum .+ Δ
     du[1:nAtoms] .= dθ_drift
     du[nAtoms+1:2*nAtoms] .= dϕ_drift
 end
@@ -106,14 +106,14 @@ end
 Γ = 1
 Δ = 2000 * Γ
 V = Δ
-nAtoms = 500
+nAtoms = 400
 tf = 160
 nT = 400
 nTraj = 5
-case = 1
+case = 2
 
-Ω_values = 0:1:40
-γ_values = [0.1, 100, 500, 1000]
+Ω_values = 0:1:30
+γ_values = [0.1, 20, 50, 100]
 
 # Create array of [Ω, γ] pairs
 omega_gamma_pairs = vec([[Ω, γ] for Ω in Ω_values, γ in γ_values])
