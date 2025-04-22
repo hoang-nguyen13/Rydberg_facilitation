@@ -109,7 +109,7 @@ V = Δ
 nAtoms = 400
 tf = 160
 nT = 400
-nTraj = 5
+nTraj = 1
 case = 2
 
 Ω_values = 0:1:30
