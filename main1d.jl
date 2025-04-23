@@ -104,7 +104,7 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
 end
 
 Γ = 1
-Δ = 2000 * Γ
+Δ = 500 * Γ
 V = Δ
 nAtoms = 400
 tf = 160
