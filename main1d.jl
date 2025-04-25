@@ -104,7 +104,7 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
 end
 
 Γ = 1
-Δ = 500 * Γ
+Δ = 2000 * Γ
 V = Δ
 nAtoms = 400
 tf = 160
@@ -113,7 +113,7 @@ nTraj = 1
 case = 2
 
 Ω_values = 0:1:30
-γ_values = [0.1, 20, 50, 100]
+γ_values = [0.1]
 
 # Create array of [Ω, γ] pairs
 omega_gamma_pairs = vec([[Ω, γ] for Ω in Ω_values, γ in γ_values])
