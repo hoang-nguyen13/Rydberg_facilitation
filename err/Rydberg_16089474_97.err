@@ -1,0 +1,4 @@
+
+[1960869] signal 11 (128): Segmentation fault
+in expression starting at /home/quw51vuk/Rydberg_facilitation/main1d.jl:139
+/var/spool/slurmd/job16108126/slurm_script: line 17: 1960869 Segmentation fault      (core dumped) $JULIA --project=/home/quw51vuk/Rydberg_facilitation -t auto --check-bounds=yes $SCRIPT $id
