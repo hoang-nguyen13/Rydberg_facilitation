@@ -85,7 +85,7 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
         remake(prob, u0=u0)
     end)
     
-    sol = solve(ensemble_prob, SRIW1(); 
+    sol = solve(ensemble_prob, SRIW1(), EnsembleThreads(); 
                 saveat=tSave, 
                 trajectories=nTraj, 
                 maxiters=1e7, 
@@ -109,10 +109,10 @@ V = Δ
 nAtoms = 400
 tf = 160
 nT = 400
-nTraj = 1
+nTraj = 150
 case = 2
 
-Ω_values = 0:1:30
+Ω_values = vcat(0:2:10, 10.5:0.025:13, 14:2:30)
 γ_values = [0.1]
 
 # Create array of [Ω, γ] pairs
