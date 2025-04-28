@@ -1,13 +1,13 @@
 #!/bin/bash
 
 #SBATCH -J Rydberg
-#SBATCH --cpus-per-task=10
+#SBATCH --cpus-per-task=16
 #SBATCH -t 200:00:00
 #SBATCH -p epyc-256
 #SBATCH -e err/%x_%A_%a.err
 #SBATCH -o out/%x_%A_%a.out
 #SBATCH --mem-per-cpu=7G
-#SBATCH --array=0-115
+#SBATCH --array=0-61
 
 id=${SLURM_ARRAY_TASK_ID}
 

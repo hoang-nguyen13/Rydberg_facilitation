@@ -57,6 +57,5 @@ end
 # Clean up
 sol = nothing
 Szs = nothing
-GC.gc()
 println("Sz computation and cleanup complete.")
 

@@ -14,8 +14,9 @@ function sampleSpinZPlus(n)
     return θ, ϕ
 end
 
-function get_neighbors_vectorized(nAtoms)
+function get_neighbors_2d(nAtoms)
     matrix_size = sqrt(nAtoms) |> Int
+    @assert matrix_size^2 == nAtoms "nAtoms must be a perfect square (e.g., 4, 9, 16)"
     rows = [(div(i - 1, matrix_size) + 1) for i in 1:nAtoms]
     cols = [(mod(i - 1, matrix_size) + 1) for i in 1:nAtoms]
     neighbor_offsets = [(-1, 0), (1, 0), (0, -1), (0, 1)]
@@ -32,6 +33,27 @@ function get_neighbors_vectorized(nAtoms)
     return neighbors
 end
 
+function get_neighbors_3d(nAtoms)
+    cube_size = cbrt(nAtoms) |> Int
+    @assert cube_size^3 == nAtoms "nAtoms must be a perfect cube (e.g., 8, 27, 64)"
+    xs = [(div((i - 1), cube_size^2) + 1) for i in 1:nAtoms]
+    ys = [(div(mod(i - 1, cube_size^2), cube_size) + 1) for i in 1:nAtoms]
+    zs = [(mod(i - 1, cube_size) + 1) for i in 1:nAtoms]
+    neighbor_offsets = [(-1, 0, 0), (1, 0, 0), (0, -1, 0), (0, 1, 0), (0, 0, -1), (0, 0, 1)]
+    neighbors = Vector{Vector{Int}}(undef, nAtoms)
+    for i in eachindex(neighbors)
+        x, y, z = xs[i], ys[i], zs[i]
+        atom_neighbors = [
+            (x + dx - 1) * cube_size^2 + (y + dy - 1) * cube_size + (z + dz)
+            for (dx, dy, dz) in neighbor_offsets
+            if 1 <= x + dx <= cube_size && 1 <= y + dy <= cube_size && 1 <= z + dz <= cube_size
+        ]
+        neighbors[i] = atom_neighbors
+    end
+
+    return neighbors
+end
+
 function drift!(du, u, p, t)
     Ω, Δ, V, Γ, γ, nAtoms, neighbors, dϕ_drift_sum = p
     θ = u[1:nAtoms]
@@ -42,7 +64,7 @@ function drift!(du, u, p, t)
         dϕ_drift_sum[2:end-1] .= 2 .+ sqrt_3 .* (cos.(θ[1:end-2]) .+ cos.(θ[3:end]))
         dϕ_drift_sum[1] = 1 + sqrt_3 * cos(θ[2])
         dϕ_drift_sum[end] = 1 + sqrt_3 * cos(θ[end-1])
-    elseif case == 2
+    else
         for n in eachindex(neighbors)
             neighbor_indices = neighbors[n]
             dϕ_drift_sum[n] = sum(1 .+ sqrt_3 * cos.(θ[neighbor_indices]))
@@ -91,7 +113,7 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
                 maxiters=1e7, 
                 abstol=1e-3,
                 reltol=1e-3, 
-                dtmax=0.001)
+                dtmax=0.0001)
     
     sol_array = zeros(2 * nAtoms, nT, nTraj)
     for i in 1:nTraj
@@ -106,16 +128,16 @@ end
 Γ = 1
 Δ = 2000 * Γ
 V = Δ
-nAtoms = 400
+nAtoms = 800
 tf = 160
 nT = 400
-nTraj = 10
-case = 2
+nTraj = 16
+case = 1
 
-Ω_values = vcat(0:2:10, 10.5:0.025:13, 14:2:30)
-γ_values = [0.1]
+Ω_values = 0:2:60 
+#13.5:0.5:30 #vcat(0:2:10, 10.5:0.025:13, 14:2:30)
+γ_values = [0.1, 20]
 
-# Create array of [Ω, γ] pairs
 omega_gamma_pairs = vec([[Ω, γ] for Ω in Ω_values, γ in γ_values])
 
 script_dir = @__DIR__
