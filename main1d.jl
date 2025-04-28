@@ -96,7 +96,7 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
     u0 = Vector{Float64}(undef, 2 * nAtoms)
     dϕ_drift_sum = zeros(nAtoms)
     
-    neighbors = case == 2 ? get_neighbors_vectorized(nAtoms) : nothing
+    neighbors = case == 2 ? get_neighbors_2d(nAtoms) : case == 3 ? get_neighbors_3d(nAtoms) : nothing
     p = (Ω, Δ, V, Γ, γ, nAtoms, neighbors, dϕ_drift_sum)
     
     prob = SDEProblem(drift!, diffusion!, u0, tspan, p)
