@@ -1,0 +1,18 @@
+GC error (probable corruption)
+Allocations: 474031459393 (Pool: 474031458246; Big: 1147); GC: 291890
+
+!!! ERROR in jl_ -- ABORTING !!!
+
+[39847] signal 6 (-6): Aborted
+in expression starting at /home/quw51vuk/Rydberg_facilitation/main1d.jl:162
+gsignal at /lib64/libc.so.6 (unknown line)
+abort at /lib64/libc.so.6 (unknown line)
+gc_dump_queue_and_abort at /cache/build/tester-amdci5-12/julialang/julia-release-1-dot-11/src/gc.c:2079
+gc_mark_outrefs at /cache/build/tester-amdci5-12/julialang/julia-release-1-dot-11/src/gc.c:2783 [inlined]
+gc_mark_and_steal at /cache/build/tester-amdci5-12/julialang/julia-release-1-dot-11/src/gc.c:2993
+gc_mark_loop_parallel at /cache/build/tester-amdci5-12/julialang/julia-release-1-dot-11/src/gc.c:3133
+jl_parallel_gc_threadfun at /cache/build/tester-amdci5-12/julialang/julia-release-1-dot-11/src/scheduler.c:151
+start_thread at /lib64/libpthread.so.0 (unknown line)
+clone at /lib64/libc.so.6 (unknown line)
+Allocations: 474031459393 (Pool: 474031458246; Big: 1147); GC: 291890
+/var/spool/slurmd/job16129994/slurm_script: line 17: 39847 Aborted                 (core dumped) $JULIA --project=/home/quw51vuk/Rydberg_facilitation -t 16 --check-bounds=yes $SCRIPT $id
