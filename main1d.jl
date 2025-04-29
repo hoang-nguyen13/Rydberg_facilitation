@@ -128,16 +128,16 @@ end
 Γ = 1
 Δ = 2000 * Γ
 V = Δ
-nAtoms = 1728
+nAtoms = 400
 tf = 160
 nT = 400
 nTraj = 16
-case = 3
+case = 2
 
-Ω_values = 0:1:30
+Ω_values = round.(vcat(0:2:8, 8.5:0.25:13, 14:0.5:30), sigdigits=2)
 #vcat(0:2:16, 17:0.25:32, 33:1:60) 
 #13.5:0.5:30 #vcat(0:2:10, 10.5:0.025:13, 14:2:30)
-γ_values = [0.1,20]
+γ_values = [20]
 
 omega_gamma_pairs = vec([[Ω, γ] for Ω in Ω_values, γ in γ_values])
 
