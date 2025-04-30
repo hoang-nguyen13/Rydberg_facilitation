@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# Parameters for OMEGA generation
+
 declare -A OMEGA_RANGES
 OMEGA_RANGES[20]="$(seq 0 4 16; seq 16.5 0.25 32; seq 32.5 1 60 | xargs -n1 printf '%.2f\n')"
 OMEGA_RANGES[0.1]="$(seq 0 4 24; seq 24.5 0.25 32; seq 32.5 1 60 | xargs -n1 printf '%.2f\n')"
 
 GAMMA_DEPHASING_VALUES=(20 0.1)
 
-# Generate the PAIRS
+
 PAIRS=()
 for gamma_dephasing in "${GAMMA_DEPHASING_VALUES[@]}"; do
     readarray -t omega_values <<< "${OMEGA_RANGES[$gamma_dephasing]}"
@@ -16,7 +16,6 @@ for gamma_dephasing in "${GAMMA_DEPHASING_VALUES[@]}"; do
     done
 done
 
-# Write PAIRS to a file
 PAIRS_FILE="params/pairs.txt"
 mkdir -p params
 > "$PAIRS_FILE"
@@ -24,7 +23,6 @@ for pair in "${PAIRS[@]}"; do
     echo "$pair" >> "$PAIRS_FILE"
 done
 
-# Submit the SLURM job with correct array size
 ARRAY_SIZE=$(( ${#PAIRS[@]} - 1 ))
 sbatch --array=0-$ARRAY_SIZE run_job.slurm
 
