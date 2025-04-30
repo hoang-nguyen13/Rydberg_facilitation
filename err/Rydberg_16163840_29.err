@@ -1,0 +1,204 @@
+error in running finalizer: Base.IOError(msg="stat(RawFD(11)): Unknown system error -116 (Unknown system error -116)", code=-116)
+uv_error at ./libuv.jl:100 [inlined]
+stat at ./stat.jl:152
+stat at ./filesystem.jl:281 [inlined]
+close at /cache/build/builder-amdci5-6/julialang/julia-release-1-dot-10/usr/share/julia/stdlib/v1.10/FileWatching/src/pidfile.jl:336
+jfptr_close_51229.1 at /home/quw51vuk/.julia/juliaup/julia-1.10.9+0.x64.linux.gnu/lib/julia/sys.so (unknown line)
+_jl_invoke at /cache/build/builder-amdci5-6/julialang/julia-release-1-dot-10/src/gf.c:2895 [inlined]
+ijl_apply_generic at /cache/build/builder-amdci5-6/julialang/julia-release-1-dot-10/src/gf.c:3077
+run_finalizer at /cache/build/builder-amdci5-6/julialang/julia-release-1-dot-10/src/gc.c:318
+jl_gc_run_finalizers_in_list at /cache/build/builder-amdci5-6/julialang/julia-release-1-dot-10/src/gc.c:410
+run_finalizers at /cache/build/builder-amdci5-6/julialang/julia-release-1-dot-10/src/gc.c:454
+jl_mutex_unlock at /cache/build/builder-amdci5-6/julialang/julia-release-1-dot-10/src/julia_locks.h:80 [inlined]
+jl_generate_fptr_impl at /cache/build/builder-amdci5-6/julialang/julia-release-1-dot-10/src/jitlayers.cpp:537
+jl_compile_method_internal at /cache/build/builder-amdci5-6/julialang/julia-release-1-dot-10/src/gf.c:2481 [inlined]
+jl_compile_method_internal at /cache/build/builder-amdci5-6/julialang/julia-release-1-dot-10/src/gf.c:2368
+_jl_invoke at /cache/build/builder-amdci5-6/julialang/julia-release-1-dot-10/src/gf.c:2887 [inlined]
+ijl_apply_generic at /cache/build/builder-amdci5-6/julialang/julia-release-1-dot-10/src/gf.c:3077
+display_error at ./client.jl:119
+jfptr_display_error_82790.1 at /home/quw51vuk/.julia/juliaup/julia-1.10.9+0.x64.linux.gnu/lib/julia/sys.so (unknown line)
+_jl_invoke at /cache/build/builder-amdci5-6/julialang/julia-release-1-dot-10/src/gf.c:2895 [inlined]
+ijl_apply_generic at /cache/build/builder-amdci5-6/julialang/julia-release-1-dot-10/src/gf.c:3077
+jl_apply at /cache/build/builder-amdci5-6/julialang/julia-release-1-dot-10/src/julia.h:1982 [inlined]
+jl_f__call_latest at /cache/build/builder-amdci5-6/julialang/julia-release-1-dot-10/src/builtins.c:812
+#invokelatest#2 at ./essentials.jl:892 [inlined]
+invokelatest at ./essentials.jl:889 [inlined]
+exec_options at ./client.jl:326
+_start at ./client.jl:557
+jfptr__start_83000.1 at /home/quw51vuk/.julia/juliaup/julia-1.10.9+0.x64.linux.gnu/lib/julia/sys.so (unknown line)
+_jl_invoke at /cache/build/builder-amdci5-6/julialang/julia-release-1-dot-10/src/gf.c:2895 [inlined]
+ijl_apply_generic at /cache/build/builder-amdci5-6/julialang/julia-release-1-dot-10/src/gf.c:3077
+jl_apply at /cache/build/builder-amdci5-6/julialang/julia-release-1-dot-10/src/julia.h:1982 [inlined]
+true_main at /cache/build/builder-amdci5-6/julialang/julia-release-1-dot-10/src/jlapi.c:582
+jl_repl_entrypoint at /cache/build/builder-amdci5-6/julialang/julia-release-1-dot-10/src/jlapi.c:731
+main at /cache/build/builder-amdci5-6/julialang/julia-release-1-dot-10/cli/loader_exe.c:58
+__libc_start_main at /lib64/libc.so.6 (unknown line)
+unknown function (ip: 0x4010b8)
+┌ Warning: attempting to remove probably stale pidfile
+│   path = "/home/quw51vuk/.julia/compiled/v1.10/BoundaryValueDiffEqFIRK/ughQx_FjR7B.ji.pidfile"
+└ @ FileWatching.Pidfile ~/.julia/juliaup/julia-1.10.9+0.x64.linux.gnu/share/julia/stdlib/v1.10/FileWatching/src/pidfile.jl:244
+Error in Timer:
+SystemError: futimes: Stale file handle
+Stacktrace:
+ [1] systemerror(p::Symbol, errno::Int32; extrainfo::Nothing)
+   @ ERROR: LoadError: IOError: stat(RawFD(11)): Unknown system error -116 (Unknown system error -116)
+Stacktrace:
+  [1] uv_error
+    @ ./libuv.jl:100 [inlined]
+  [2] stat(fd::RawFD)
+    @ Base.Filesystem ./stat.jl:152
+  [3] stat
+    @ ./filesystem.jl:281 [inlined]
+  [4] close(lock::FileWatching.Pidfile.LockMonitor)
+    @ FileWatching.Pidfile ~/.julia/juliaup/julia-1.10.9+0.x64.linux.gnu/share/julia/stdlib/v1.10/FileWatching/src/pidfile.jl:336
+  [5] mkpidlock(f::Base.var"#969#970"{Base.PkgId}, at::String, pid::Int32; kwopts::@Kwargs{stale_age::Int64, wait::Bool})
+    @ FileWatching.Pidfile ~/.julia/juliaup/julia-1.10.9+0.x64.linux.gnu/share/julia/stdlib/v1.10/FileWatching/src/pidfile.jl:95
+  [6] #mkpidlock#6
+    @ ~/.julia/juliaup/julia-1.10.9+0.x64.linux.gnu/share/julia/stdlib/v1.10/FileWatching/src/pidfile.jl:88 [inlined]
+  [7] trymkpidlock(::Function, ::Vararg{Any}; kwargs::@Kwargs{stale_age::Int64})
+    @ FileWatching.Pidfile ~/.julia/juliaup/julia-1.10.9+0.x64.linux.gnu/share/julia/stdlib/v1.10/FileWatching/src/pidfile.jl:111
+  [8] #invokelatest#2
+    @ ./essentials.jl:894 [inlined]
+  [9] invokelatest
+    @ ./essentials.jl:889 [inlined]
+ [10] maybe_cachefile_lock(f::Base.var"#969#970"{Base.PkgId}, pkg::Base.PkgId, srcpath::String; stale_age::Int64)
+    @ Base ./loading.jl:3054
+ [11] maybe_cachefile_lock
+    @ ./loading.jl:3051 [inlined]
+ [12] _require(pkg::Base.PkgId, env::String)
+    @ Base ./loading.jl:2040
+ [13] __require_prelocked(uuidkey::Base.PkgId, env::String)
+    @ Base ./loading.jl:1882
+ [14] #invoke_in_world#3
+    @ ./essentials.jl:926 [inlined]
+ [15] invoke_in_world
+    @ ./essentials.jl:923 [inlined]
+ [16] _require_prelocked(uuidkey::Base.PkgId, env::String)
+    @ Base ./loading.jl:1873
+ [17] macro expansion
+    @ ./loading.jl:1860 [inlined]
+ [18] macro expansion
+    @ ./lock.jl:267 [inlined]
+ [19] __require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:1823
+ [20] #invoke_in_world#3
+    @ ./essentials.jl:926 [inlined]
+ [21] invoke_in_world
+    @ ./essentials.jl:923 [inlined]
+ [22] require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:1816
+ [23] include
+    @ ./Base.jl:495 [inlined]
+ [24] include_package_for_output(pkg::Base.PkgId, input::String, depot_path::Vector{String}, dl_load_path::Vector{String}, load_path::Vector{String}, concrete_deps::Vector{Pair{Base.PkgId, UInt128}}, source::String)
+    @ Base ./loading.jl:2292
+ [25] top-level scope
+    @ stdin:4
+in expression starting at /home/quw51vuk/.julia/packages/BoundaryValueDiffEq/20ehN/src/BoundaryValueDiffEq.jl:1
+in expression starting at stdin:4
+┌ Warning: attempting to remove probably stale pidfile
+│   path = "/home/quw51vuk/.julia/compiled/v1.10/BoundaryValueDiffEq/Levrg_FjR7B.ji.pidfile"
+└ @ FileWatching.Pidfile ~/.julia/juliaup/julia-1.10.9+0.x64.linux.gnu/share/julia/stdlib/v1.10/FileWatching/src/pidfile.jl:244
+ERROR: LoadError: Failed to precompile BoundaryValueDiffEq [764a87c0-6b3e-53db-9096-fe964310641d] to "/home/quw51vuk/.julia/compiled/v1.10/BoundaryValueDiffEq/jl_7Wuevk".
+Stacktrace:
+  [1] error(s::String)
+    @ Base ./error.jl:35
+  [2] compilecache(pkg::Base.PkgId, path::String, internal_stderr::IO, internal_stdout::IO, keep_loaded_modules::Bool)
+    @ Base ./loading.jl:2539
+  [3] compilecache
+    @ ./loading.jl:2411 [inlined]
+  [4] (::Base.var"#969#970"{Base.PkgId})()
+    @ Base ./loading.jl:2044
+  [5] mkpidlock(f::Base.var"#969#970"{Base.PkgId}, at::String, pid::Int32; kwopts::@Kwargs{stale_age::Int64, wait::Bool})
+    @ FileWatching.Pidfile ~/.julia/juliaup/julia-1.10.9+0.x64.linux.gnu/share/julia/stdlib/v1.10/FileWatching/src/pidfile.jl:93
+  [6] #mkpidlock#6
+    @ ~/.julia/juliaup/julia-1.10.9+0.x64.linux.gnu/share/julia/stdlib/v1.10/FileWatching/src/pidfile.jl:88 [inlined]
+  [7] trymkpidlock(::Function, ::Vararg{Any}; kwargs::@Kwargs{stale_age::Int64})
+    @ FileWatching.Pidfile ~/.julia/juliaup/julia-1.10.9+0.x64.linux.gnu/share/julia/stdlib/v1.10/FileWatching/src/pidfile.jl:111
+  [8] #invokelatest#2
+    @ ./essentials.jl:894 [inlined]
+  [9] invokelatest
+    @ ./essentials.jl:889 [inlined]
+ [10] maybe_cachefile_lock(f::Base.var"#969#970"{Base.PkgId}, pkg::Base.PkgId, srcpath::String; stale_age::Int64)
+    @ Base ./loading.jl:3054
+ [11] maybe_cachefile_lock
+    @ ./loading.jl:3051 [inlined]
+ [12] _require(pkg::Base.PkgId, env::String)
+    @ Base ./loading.jl:2040
+ [13] __require_prelocked(uuidkey::Base.PkgId, env::String)
+    @ Base ./loading.jl:1882
+ [14] #invoke_in_world#3
+    @ ./essentials.jl:926 [inlined]
+ [15] invoke_in_world
+    @ ./essentials.jl:923 [inlined]
+ [16] _require_prelocked(uuidkey::Base.PkgId, env::String)
+    @ Base ./loading.jl:1873
+ [17] macro expansion
+    @ ./loading.jl:1860 [inlined]
+ [18] macro expansion
+    @ ./lock.jl:267 [inlined]
+ [19] __require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:1823
+ [20] #invoke_in_world#3
+    @ ./essentials.jl:926 [inlined]
+ [21] invoke_in_world
+    @ ./essentials.jl:923 [inlined]
+ [22] require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:1816
+ [23] include
+    @ ./Base.jl:495 [inlined]
+ [24] include_package_for_output(pkg::Base.PkgId, input::String, depot_path::Vector{String}, dl_load_path::Vector{String}, load_path::Vector{String}, concrete_deps::Vector{Pair{Base.PkgId, UInt128}}, source::String)
+    @ Base ./loading.jl:2292
+ [25] top-level scope
+    @ stdin:4
+in expression starting at /home/quw51vuk/.julia/packages/DifferentialEquations/eQbP8/src/DifferentialEquations.jl:1
+in expression starting at stdin:4
+┌ Warning: attempting to remove probably stale pidfile
+│   path = "/home/quw51vuk/.julia/compiled/v1.10/DifferentialEquations/UQdwS_FjR7B.ji.pidfile"
+└ @ FileWatching.Pidfile ~/.julia/juliaup/julia-1.10.9+0.x64.linux.gnu/share/julia/stdlib/v1.10/FileWatching/src/pidfile.jl:244
+ERROR: LoadError: Failed to precompile DifferentialEquations [0c46a032-eb83-5123-abaf-570d42b7fbaa] to "/home/quw51vuk/.julia/compiled/v1.10/DifferentialEquations/jl_5Nvc0r".
+Stacktrace:
+  [1] error(s::String)
+    @ Base ./error.jl:35
+  [2] compilecache(pkg::Base.PkgId, path::String, internal_stderr::IO, internal_stdout::IO, keep_loaded_modules::Bool)
+    @ Base ./loading.jl:2539
+  [3] compilecache
+    @ ./loading.jl:2411 [inlined]
+  [4] (::Base.var"#969#970"{Base.PkgId})()
+    @ Base ./loading.jl:2044
+  [5] mkpidlock(f::Base.var"#969#970"{Base.PkgId}, at::String, pid::Int32; kwopts::@Kwargs{stale_age::Int64, wait::Bool})
+    @ FileWatching.Pidfile ~/.julia/juliaup/julia-1.10.9+0.x64.linux.gnu/share/julia/stdlib/v1.10/FileWatching/src/pidfile.jl:93
+  [6] #mkpidlock#6
+    @ ~/.julia/juliaup/julia-1.10.9+0.x64.linux.gnu/share/julia/stdlib/v1.10/FileWatching/src/pidfile.jl:88 [inlined]
+  [7] trymkpidlock(::Function, ::Vararg{Any}; kwargs::@Kwargs{stale_age::Int64})
+    @ FileWatching.Pidfile ~/.julia/juliaup/julia-1.10.9+0.x64.linux.gnu/share/julia/stdlib/v1.10/FileWatching/src/pidfile.jl:111
+  [8] #invokelatest#2
+    @ ./essentials.jl:894 [inlined]
+  [9] invokelatest
+    @ ./essentials.jl:889 [inlined]
+ [10] maybe_cachefile_lock(f::Base.var"#969#970"{Base.PkgId}, pkg::Base.PkgId, srcpath::String; stale_age::Int64)
+    @ Base ./loading.jl:3054
+ [11] maybe_cachefile_lock
+    @ ./loading.jl:3051 [inlined]
+ [12] _require(pkg::Base.PkgId, env::String)
+    @ Base ./loading.jl:2040
+ [13] __require_prelocked(uuidkey::Base.PkgId, env::String)
+    @ Base ./loading.jl:1882
+ [14] #invoke_in_world#3
+    @ ./essentials.jl:926 [inlined]
+ [15] invoke_in_world
+    @ ./essentials.jl:923 [inlined]
+ [16] _require_prelocked(uuidkey::Base.PkgId, env::String)
+    @ Base ./loading.jl:1873
+ [17] macro expansion
+    @ ./loading.jl:1860 [inlined]
+ [18] macro expansion
+    @ ./lock.jl:267 [inlined]
+ [19] __require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:1823
+ [20] #invoke_in_world#3
+    @ ./essentials.jl:926 [inlined]
+ [21] invoke_in_world
+    @ ./essentials.jl:923 [inlined]
+ [22] require(into::Module, mod::Symbol)
+    @ Base ./loading.jl:1816
+in expression starting at /home/quw51vuk/Rydberg_facilitation/main.jl:5
