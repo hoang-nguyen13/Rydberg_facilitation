@@ -11,10 +11,10 @@
 GAMMA=1
 DELTA=2000
 V=$DELTA
-NATOMS=1500
+NATOMS=100
 TF=160
 NT=400
-NTRAJ=32
+NTRAJ=16
 CASE=1
 
 # Read the correct pair from the file
