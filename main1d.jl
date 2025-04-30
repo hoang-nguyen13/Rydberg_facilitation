@@ -125,29 +125,21 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
     return tSave, sol_array    
 end
 
-Γ = 1
-Δ = 2000 * Γ
-V = Δ
-nAtoms = 1225
-tf = 160
-nT = 400
-nTraj = 32
-case = 2
-
-Ω_values = round.(vcat(0:2:8, 8.5:0.15:13, 14:0.5:30), digits=2)
-#vcat(0:2:16, 17:0.25:32, 33:1:60) 
-#13.5:0.5:30 #vcat(0:2:10, 10.5:0.025:13, 14:2:30)
-γ_values = [20]
-
-omega_gamma_pairs = vec([[Ω, γ] for Ω in Ω_values, γ in γ_values])
-
-script_dir = @__DIR__
-omega_gamma_idx = parse(Int, ARGS[1])
-Ω, γ = omega_gamma_pairs[omega_gamma_idx + 1]
+Ω = parse(Float64, ARGS[1])
+γ = parse(Float64, ARGS[2])
+Γ = parse(Float64, ARGS[3])
+Δ = parse(Float64, ARGS[4])
+V = parse(Float64, ARGS[5])
+nAtoms = parse(Int, ARGS[6])
+tf = parse(Float64, ARGS[7])
+nT = parse(Int, ARGS[8])
+nTraj = parse(Int, ARGS[9])
+case = parse(Int, ARGS[10])
 
 println("Computing for nAtoms = $nAtoms, γ = $γ, Ω = $Ω")
 flush(stdout)
 
+script_dir = @__DIR__
 data_folder = joinpath(script_dir, "results_data", "atoms=$(nAtoms),Δ=$(Δ),γ=$(γ)")
 if !isdir(data_folder)
     mkpath(data_folder)
