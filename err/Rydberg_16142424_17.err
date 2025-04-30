@@ -1,0 +1,13 @@
+ERROR: LoadError: InexactError: Int64(41.569219381653056)
+Stacktrace:
+ [1] Int64
+   @ ./float.jl:994 [inlined]
+ [2] |>
+   @ ./operators.jl:926 [inlined]
+ [3] get_neighbors_2d(nAtoms::Int64)
+   @ Main ~/Rydberg_facilitation/main1d.jl:18
+ [4] computeTWA(nAtoms::Int64, tf::Int64, nT::Int64, nTraj::Int64, Ω::Float64, Δ::Int64, V::Int64, Γ::Int64, γ::Float64, case::Int64)
+   @ Main ~/Rydberg_facilitation/main1d.jl:99
+ [5] top-level scope
+   @ ~/Rydberg_facilitation/main1d.jl:162
+in expression starting at /home/quw51vuk/Rydberg_facilitation/main1d.jl:162
