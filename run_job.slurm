@@ -11,11 +11,11 @@
 GAMMA=1
 DELTA=2000
 V=$DELTA
-NATOMS=1728
+NATOMS=1225
 TF=160
 NT=400
 NTRAJ=32
-CASE=3
+CASE=2
 
 # Read the correct pair from the file
 PAIR=$(sed -n "$((SLURM_ARRAY_TASK_ID + 1))p" params/pairs.txt)
