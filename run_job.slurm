@@ -9,12 +9,12 @@
 #SBATCH --mem=0
 
 GAMMA=1
-DELTA=2000
+DELTA=500
 V=$DELTA
 NATOMS=1225
-TF=160
+TF=50
 NT=400
-NTRAJ=32
+NTRAJ=1
 CASE=2
 
 # Read the correct pair from the file
