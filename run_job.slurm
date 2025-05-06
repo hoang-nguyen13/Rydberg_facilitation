@@ -14,7 +14,7 @@ V=$DELTA
 NATOMS=1225
 TF=80
 NT=400
-NTRAJ=32
+NTRAJ=80
 CASE=2
 
 # Read the correct pair from the file
