@@ -2,10 +2,10 @@
 
 
 declare -A OMEGA_RANGES
-OMEGA_RANGES[20]="$(seq 0 2 8; seq 8.5 0.15 13; seq 13.5 0.5 30 | xargs -n1 printf '%.2f\n')"
-OMEGA_RANGES[0.1]="$(seq 0 2 8; seq 8.5 0.15 13; seq 13.5 0.5 30 | xargs -n1 printf '%.2f\n')"
+#OMEGA_RANGES[20]="$(seq 0 2 8; seq 8.5 0.15 13; seq 13.5 0.5 30 | xargs -n1 printf '%.2f\n')"
+OMEGA_RANGES[0.1]="$(seq 0 4 24; seq 24.5 0.25 32; seq 32.5 0.5 60 | xargs -n1 printf '%.2f\n')"
 
-GAMMA_DEPHASING_VALUES=(20 0.1)
+GAMMA_DEPHASING_VALUES=(0.1)
 
 
 PAIRS=()
