@@ -14,7 +14,7 @@ V=$DELTA
 NATOMS=1728
 TF=160
 NT=400
-NTRAJ=48
+NTRAJ=32
 CASE=3
 
 PAIR=$(sed -n "$((SLURM_ARRAY_TASK_ID + 1))p" params/pairs.txt)
