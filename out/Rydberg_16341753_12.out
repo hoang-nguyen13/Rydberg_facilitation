@@ -1,0 +1,12 @@
+Computing for nAtoms = 1225, γ = 20.0, Ω = 10.3
+Directory exists: /home/quw51vuk/Rydberg_facilitation/results_data/atoms=1225,Δ=2000.0,γ=20.0
+Starting TWA computation for γ = 20.0...
+TWA computation finished for γ = 20.0.
+Solution saved temporarily: /home/quw51vuk/Rydberg_facilitation/results_data/atoms=1225,Δ=2000.0,γ=20.0/temp_sol_2D,Ω=10.3,Δ=2000.0,γ=20.0.jld2
+Executing command: `/home/quw51vuk/julia-1.11.2/bin/julia /home/quw51vuk/Rydberg_facilitation/compute_sz.jl /home/quw51vuk/Rydberg_facilitation/results_data/atoms=1225,Δ=2000.0,γ=20.0/temp_sol_2D,Ω=10.3,Δ=2000.0,γ=20.0.jld2 1225 32`
+Computing normalized Sz from /home/quw51vuk/Rydberg_facilitation/results_data/atoms=1225,Δ=2000.0,γ=20.0/temp_sol_2D,Ω=10.3,Δ=2000.0,γ=20.0.jld2...
+Normalized Sz saved successfully to /home/quw51vuk/Rydberg_facilitation/results_data/atoms=1225,Δ=2000.0,γ=20.0/sz_mean_steady_for_2D,Ω=10.3,Δ=2000.0,γ=20.0.jld2
+Temporary sol file deleted: /home/quw51vuk/Rydberg_facilitation/results_data/atoms=1225,Δ=2000.0,γ=20.0/temp_sol_2D,Ω=10.3,Δ=2000.0,γ=20.0.jld2
+Sz computation and cleanup complete.
+Sz computation completed for γ = 20.0.
+Computation completed for Ω = 10.3, γ = 20.0.
