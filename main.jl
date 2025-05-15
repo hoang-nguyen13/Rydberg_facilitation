@@ -114,13 +114,13 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
 #                abstol=1e-3,
 #                reltol=1e-3, 
 #                dtmax=0.0001)
-    sol = solve(ensemble_prob, SROCK1(), EnsembleThreads(); 
+    sol = solve(ensemble_prob, SROCK2(), EnsembleThreads(); 
             saveat=tSave, 
             trajectories=nTraj, 
             maxiters=1e7,
-	    abstol=1e-3,
-	    reltol=1e-3, 
-            dt=1e-3,      # Fixed small step size for stability
+	    abstol=1e-2,
+	    reltol=1e-2, 
+            dt=1e-4,      # Fixed small step size for stability
             adaptive=false)  # SROCK1 requires fixed steps
     
     sol_array = zeros(2 * nAtoms, nT, nTraj)
