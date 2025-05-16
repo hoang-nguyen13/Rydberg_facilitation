@@ -11,7 +11,7 @@
 GAMMA=1
 DELTA=2000
 V=$DELTA
-NATOMS=5
+NATOMS=3500
 TF=2000
 NT=400
 NTRAJ=16
@@ -22,5 +22,5 @@ read OMEGA GAMMA_DEPHASING <<< "$PAIR"
 
 JULIA=julia
 SCRIPT=/home/quw51vuk/Rydberg_facilitation/main.jl
-$JULIA --project=/home/quw51vuk/Rydberg_facilitation -t 16 --check-bounds=yes $SCRIPT $OMEGA $GAMMA_DEPHASING $GAMMA $DELTA $V $NATOMS $TF $NT $NTRAJ $CASE
+$JULIA --project=/home/quw51vuk/Rydberg_facilitation -t auto --check-bounds=yes $SCRIPT $OMEGA $GAMMA_DEPHASING $GAMMA $DELTA $V $NATOMS $TF $NT $NTRAJ $CASE
 
