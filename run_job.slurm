@@ -1,12 +1,12 @@
 #!/bin/bash
 
 #SBATCH -J Rydberg
-#SBATCH --cpus-per-task=16
+#SBATCH --cpus-per-task=1
 #SBATCH -t 200:00:00
-#SBATCH -p cpuidle
+#SBATCH -p physik-fleischhauer
 #SBATCH -e err/%x_%A_%a.err
 #SBATCH -o out/%x_%A_%a.out
-#SBATCH --mem=0
+#SBATCH --mem-per-cpu=7G
 
 GAMMA=1
 DELTA=2000
@@ -14,7 +14,7 @@ V=$DELTA
 NATOMS=400
 TF=100
 NT=400
-NTRAJ=16
+NTRAJ=1
 CASE=2
 
 PAIR=$(sed -n "$((SLURM_ARRAY_TASK_ID + 1))p" params/pairs.txt)
