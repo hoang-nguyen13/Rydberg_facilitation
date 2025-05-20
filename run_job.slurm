@@ -3,7 +3,7 @@
 #SBATCH -J Rydberg
 #SBATCH --cpus-per-task=16
 #SBATCH -t 200:00:00
-#SBATCH -p epyc-256
+#SBATCH -p idle
 #SBATCH -e err/%x_%A_%a.err
 #SBATCH -o out/%x_%A_%a.out
 #SBATCH --mem=0
@@ -13,7 +13,7 @@ DELTA=200
 V=$DELTA
 NATOMS=1225
 TF=2000
-NT=400
+NT=1000
 NTRAJ=80
 CASE=2
 
