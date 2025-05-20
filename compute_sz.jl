@@ -38,7 +38,7 @@ println("Computing normalized Sz from $sol_filename...")
 Szs = compute_spin_Sz(sol, nAtoms)
 
 # Save to new filename
-sz_filename = replace(sol_filename, "temp_sol_" => "em_sol_sz_mean_steady_for_")
+sz_filename = replace(sol_filename, "temp_sol_" => "sz_mean_steady_for_")
 try
     jldsave(sz_filename; t=t, Szs=Szs)
     println("Normalized Sz saved successfully to $sz_filename")

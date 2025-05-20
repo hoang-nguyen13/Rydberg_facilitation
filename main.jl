@@ -107,13 +107,13 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
         remake(prob, u0=u0)
     end)
     
-    sol = solve(ensemble_prob, EM(), EnsembleThreads(); 
+    sol = solve(ensemble_prob, SRIW1(), EnsembleThreads(); 
                 saveat=tSave, 
                 trajectories=nTraj, 
                 maxiters=1e+7,
                 abstol=1e-3,
                 reltol=1e-3,
-		dt=1e-3
+		adaptive=true
 		)
 
     sol_array = zeros(2 * nAtoms, nT, nTraj)
