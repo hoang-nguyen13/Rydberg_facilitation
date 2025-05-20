@@ -3,7 +3,7 @@
 #SBATCH -J Rydberg
 #SBATCH --cpus-per-task=16
 #SBATCH -t 200:00:00
-#SBATCH -p idle
+#SBATCH -p cpuidle
 #SBATCH -e err/%x_%A_%a.err
 #SBATCH -o out/%x_%A_%a.out
 #SBATCH --mem=0
