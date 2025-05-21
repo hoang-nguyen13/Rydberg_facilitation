@@ -111,7 +111,8 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
     
     sol = solve(ensemble_prob, SOSRA(), EnsembleThreads(); 
                 saveat=tSave, 
-                trajectories=nTraj
+                trajectories=nTraj,
+		dtmax=1e-4
 		)
 
     sol_array = zeros(2 * nAtoms, nT, nTraj)
