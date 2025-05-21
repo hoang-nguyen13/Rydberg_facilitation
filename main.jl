@@ -70,10 +70,8 @@ function drift!(du, u, p, t)
             dϕ_drift_sum[n] = sum(1 .+ sqrt_3 * cos.(θ[neighbor_indices]))
         end
     end
-    eps = 1e-6
-    θ_reg = clamp.(θ, eps, π - eps)
-    cotθ = cot.(θ_reg)
-    cscθ = csc.(θ_reg)
+    cotθ = cot.(θ)
+    cscθ = csc.(θ)
     dθ_drift = 2 .* Ω .* sin.(ϕ) .+ Γ .* (cotθ .+ cscθ ./ sqrt_3)
     dϕ_drift = 2 .* Ω .* cotθ .* cos.(ϕ) .- V .* dϕ_drift_sum .+ Δ
     du[1:nAtoms] .= dθ_drift
@@ -112,7 +110,9 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
     sol = solve(ensemble_prob, SROCK1(), EnsembleThreads(); 
                 saveat=tSave, 
                 trajectories=nTraj,
-		dt=1e-4
+		abstol=1e-3,
+		reltol=1e-3,
+		dt=1e-3
 		)
 
     sol_array = zeros(2 * nAtoms, nT, nTraj)
