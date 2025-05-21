@@ -112,8 +112,8 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
                 trajectories=nTraj,
 		abstol=1e-4,
 		reltol=1e-4,
-		dt=1e-5,
-		maxiters=1e7
+		dt=1e-5
+		#maxiters=1e7
 		#dtmin=0.0001,
 		#dtmax=0.00000000001
 		)
