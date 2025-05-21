@@ -1,0 +1,2 @@
+┌ Warning: dt(0.0001) <= dtmin(0.0001) at t=0.0, and step error estimate = 96.60688066333557. Aborting. There is either an error in your model specification or the true solution is unstable.
+└ @ SciMLBase ~/.julia/packages/SciMLBase/7BHQj/src/integrator_interface.jl:612
