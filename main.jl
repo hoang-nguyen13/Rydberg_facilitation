@@ -111,8 +111,8 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
                 saveat=tSave, 
                 trajectories=nTraj,
 		maxiters=1e10,
-		abstol=1e-4,
-		reltol=1e-4,
+		abstol=1e-3,
+		reltol=1e-3,
 		dtmax=0.005)
 
     sol_array = zeros(2 * nAtoms, nT, nTraj)
