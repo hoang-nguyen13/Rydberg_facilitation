@@ -113,7 +113,7 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
 		maxiters=1e10,
 		abstol=1e-3,
 		reltol=1e-3,
-		dtmax=0.003)
+		dtmax=0.005)
 
     sol_array = zeros(2 * nAtoms, nT, nTraj)
     for i in 1:nTraj
