@@ -110,10 +110,10 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
     sol = solve(ensemble_prob, SRIW1(), EnsembleThreads(); 
                 saveat=tSave, 
                 trajectories=nTraj,
-		maxiters=1e9,
-		abstol=1e-3,
-		reltol=1e-3,
-		dtmax=0.001)
+		maxiters=1e10,
+		abstol=1e-4,
+		reltol=1e-4,
+		dtmax=0.005)
 
     sol_array = zeros(2 * nAtoms, nT, nTraj)
     for i in 1:nTraj
