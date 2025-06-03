@@ -93,7 +93,7 @@ end
 function compute_spin_Sz(sol, nAtoms)
     θ = sol[1:nAtoms, :, :]
 
-    Szs = sqrt(3) * sum(cos.(θ), dims=1)[1, :, :] / 2
+    Szs = sqrt(3) * sum(cos.(θ), dims=1)[1, :, :] / nAtoms
     Sz = mean(Szs, dims=2)[:]
     return Sz
 end
