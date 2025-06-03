@@ -90,6 +90,14 @@ function diffusion!(du, u, p, t)
     du[nAtoms+1:2*nAtoms] .= diffusion
 end
 
+function compute_spin_Sz(sol, nAtoms)
+    θ = sol[1:nAtoms, :, :]
+
+    Szs = sqrt(3) * sum(cos.(θ), dims=1)[1, :, :] / 2
+    Sz = mean(Szs, dims=2)[:]
+    return Sz
+end
+
 function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
     tspan = (0, tf)
     tSave = LinRange(0, tf, nT)
@@ -114,15 +122,8 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
                 abstol=1e-3,
                 reltol=1e-3,
                 dtmax=0.0001)
-
-    sol_array = zeros(2 * nAtoms, nT, nTraj)
-    for i in 1:nTraj
-        for (j, u) in enumerate(sol[i].u)
-            sol_array[:, j, i] = u
-        end
-    end
             
-    return tSave, sol_array    
+    return tSave, sol    
 end
 
 Ω = parse(Float64, ARGS[1])
@@ -151,24 +152,15 @@ flush(stdout)
 
 println("Starting TWA computation for γ = $γ...")
 flush(stdout)
-t, sol_array = computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
+t, sol = computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
+
+sz_vals = compute_spin_Sz(sol, nAtoms)
+
 println("TWA computation finished for γ = $γ.")
 flush(stdout)
 
-sol_filename = "$(data_folder)/temp_sol_$(case)D,Ω=$(Ω),Δ=$(Δ),γ=$(γ).jld2"
-jldsave(sol_filename; t=t, sol=sol_array)
-println("Solution saved temporarily: $sol_filename")
-flush(stdout)
-
-julia_path = joinpath(homedir(), "julia-1.11.2", "bin", "julia")
-compute_sz_script = joinpath(script_dir, "compute_sz.jl")
-cmd = `$julia_path $compute_sz_script $sol_filename $nAtoms $nTraj`
-println("Executing command: $cmd")
-flush(stdout)
-
-run(cmd; wait=true)
-println("Sz computation completed for γ = $γ.")
-flush(stdout)
+sol_filename = "$(data_folder)/ρ_ss_$(case)D,Ω=$(Ω),Δ=$(Δ),γ=$(γ).jld2"
+jldsave(sol_filename; t=t, sz=sz_vals)
 
 println("Computation completed for Ω = $Ω, γ = $γ.")
 flush(stdout)
