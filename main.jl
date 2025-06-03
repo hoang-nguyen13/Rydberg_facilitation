@@ -97,45 +97,32 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
     dϕ_drift_sum = zeros(nAtoms)
     
     neighbors = case == 2 ? get_neighbors_2d(nAtoms) : case == 3 ? get_neighbors_3d(nAtoms) : nothing
+    p = (Ω, Δ, V, Γ, γ, nAtoms, neighbors, dϕ_drift_sum)
     
-    sz_array = zeros(nT, nTraj)
-    p = (Ω, Δ, V, Γ, γ, nAtoms, neighbors, dϕ_drift_sum, sz_array)
     prob = SDEProblem(drift!, diffusion!, u0, tspan, p)
-    
-    function condition(u, t, integrator)
-        t in tSave  # Trigger at saveat times
-    end
-
-    function affect!(integrator)
-        t_idx = findfirst(isequal(integrator.t), tSave)
-        if t_idx !== nothing
-            sz = sum(sqrt(3) * cos.(integrator.u[1:integrator.p[6]])) / integrator.p[6]
-            integrator.p[9][t_idx, integrator.p[10]] = sz
-        end
-    end
-    cb = DiscreteCallback(condition, affect!)
-
     ensemble_prob = EnsembleProblem(prob; prob_func=(prob, i, repeat) -> begin
         θ, ϕ = sampleSpinZPlus(nAtoms)
         u0[1:nAtoms] = θ
         u0[nAtoms+1:2*nAtoms] = ϕ
-        remake(prob, u0=u0, p=(Ω, Δ, V, Γ, γ, nAtoms, neighbors, dϕ_drift_sum, sz_array, i))
+        remake(prob, u0=u0)
     end)
     
-    solve(ensemble_prob, SRIW1(), EnsembleThreads(); 
+    sol = solve(ensemble_prob, SRIW1(), EnsembleThreads(); 
                 saveat=tSave, 
                 trajectories=nTraj,
-		maxiters=5e9,
-		abstol=1e-3,
-		reltol=1e-3,
-		dtmax=0.0001,
-		save_everystep=false,
-		save_start=false,
-		save_end=false,
-		callback=cb)
-    
-    GC.gc(true)
-    return tSave, sz_array    
+                maxiters=5e9,
+                abstol=1e-3,
+                reltol=1e-3,
+                dtmax=0.0001)
+
+    sol_array = zeros(2 * nAtoms, nT, nTraj)
+    for i in 1:nTraj
+        for (j, u) in enumerate(sol[i].u)
+            sol_array[:, j, i] = u
+        end
+    end
+            
+    return tSave, sol_array    
 end
 
 Ω = parse(Float64, ARGS[1])
@@ -164,16 +151,27 @@ flush(stdout)
 
 println("Starting TWA computation for γ = $γ...")
 flush(stdout)
-t, sz_array = computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
+t, sol_array = computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
 println("TWA computation finished for γ = $γ.")
 flush(stdout)
 
-sol_filename = "$(data_folder)/ρ_ss_$(case)D,Ω=$(Ω),Δ=$(Δ),γ=$(γ).jld2"
-jldsave(sol_filename; t=t, sz=sz_array)
-println("Solution saved: $sol_filename")
+sol_filename = "$(data_folder)/temp_sol_$(case)D,Ω=$(Ω),Δ=$(Δ),γ=$(γ).jld2"
+jldsave(sol_filename; t=t, sol=sol_array)
+println("Solution saved temporarily: $sol_filename")
 flush(stdout)
 
+julia_path = joinpath(homedir(), "julia-1.11.2", "bin", "julia")
+compute_sz_script = joinpath(script_dir, "compute_sz.jl")
+cmd = `$julia_path $compute_sz_script $sol_filename $nAtoms $nTraj`
+println("Executing command: $cmd")
+flush(stdout)
+
+run(cmd; wait=true)
 println("Sz computation completed for γ = $γ.")
 flush(stdout)
 
+println("Computation completed for Ω = $Ω, γ = $γ.")
+flush(stdout)
+
 sleep(2)
+
