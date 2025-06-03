@@ -1,0 +1,17 @@
+ERROR: LoadError: DimensionMismatch: tried to assign 1-element array to 400×1 destination
+Stacktrace:
+ [1] throw_setindex_mismatch(X::Vector{Float64}, I::Tuple{Int64, Int64})
+   @ Base ./indices.jl:193
+ [2] setindex_shape_check
+   @ ./indices.jl:248 [inlined]
+ [3] _unsafe_setindex!(::IndexLinear, ::Matrix{Float64}, ::Vector{Float64}, ::Base.Slice{Base.OneTo{Int64}}, ::Int64)
+   @ Base ./multidimensional.jl:953
+ [4] _setindex!
+   @ ./multidimensional.jl:944 [inlined]
+ [5] setindex!
+   @ ./abstractarray.jl:1395 [inlined]
+ [6] computeTWA(nAtoms::Int64, tf::Float64, nT::Int64, nTraj::Int64, Ω::Float64, Δ::Float64, V::Float64, Γ::Float64, γ::Float64, case::Int64)
+   @ Main ~/Rydberg_facilitation/main.jl:136
+ [7] top-level scope
+   @ ~/Rydberg_facilitation/main.jl:169
+in expression starting at /home/quw51vuk/Rydberg_facilitation/main.jl:169

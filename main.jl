@@ -50,7 +50,6 @@ function get_neighbors_3d(nAtoms)
         ]
         neighbors[i] = atom_neighbors
     end
-
     return neighbors
 end
 
@@ -60,7 +59,7 @@ function drift!(du, u, p, t)
     ϕ = u[nAtoms+1:2*nAtoms]
     sqrt_3 = sqrt(3)
     fill!(dϕ_drift_sum, 0)
-    if case == 1
+    if nAtoms > 2 && neighbors === nothing  # Assume case == 1
         dϕ_drift_sum[2:end-1] .= 2 .+ sqrt_3 .* (cos.(θ[1:end-2]) .+ cos.(θ[3:end]))
         dϕ_drift_sum[1] = 1 + sqrt_3 * cos(θ[2])
         dϕ_drift_sum[end] = 1 + sqrt_3 * cos(θ[end-1])
@@ -92,7 +91,6 @@ end
 
 function compute_spin_Sz(sol, nAtoms)
     θ = sol[1:nAtoms, :, :]
-
     Szs = sqrt(3) * sum(cos.(θ), dims=1)[1, :, :] / nAtoms
     Sz = mean(Szs, dims=2)[:]
     return Sz
@@ -107,25 +105,41 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
     neighbors = case == 2 ? get_neighbors_2d(nAtoms) : case == 3 ? get_neighbors_3d(nAtoms) : nothing
     p = (Ω, Δ, V, Γ, γ, nAtoms, neighbors, dϕ_drift_sum)
     
+    # Initialize array to store Sz for all trajectories and time points
+    Sz_all = zeros(nT, nTraj)
+    
     prob = SDEProblem(drift!, diffusion!, u0, tspan, p)
     ensemble_prob = EnsembleProblem(prob; prob_func=(prob, i, repeat) -> begin
         θ, ϕ = sampleSpinZPlus(nAtoms)
         u0[1:nAtoms] = θ
         u0[nAtoms+1:2*nAtoms] = ϕ
         remake(prob, u0=u0)
+    end, output_func=(sol, i) -> begin
+        # Compute Sz directly from the solution
+        θ = sol[1:nAtoms, :, :]
+        Szs = sqrt(3) * sum(cos.(θ), dims=1)[1, :, :] / nAtoms
+        Sz = Szs[1, :, 1]
+        (Sz, false)  # Return Sz and indicate not to save the full solution
     end)
     
-    sol = solve(ensemble_prob, SRIW1(), EnsembleThreads(); 
-                saveat=tSave, 
+    # Solve the ensemble problem, storing only Sz
+    sol = solve(ensemble_prob, SRIW1(), EnsembleThreads();
+                saveat=tSave,
                 trajectories=nTraj,
                 maxiters=5e9,
                 abstol=1e-3,
                 reltol=1e-3,
                 dtmax=0.0001)
-            
-    return tSave, sol    
+    
+    # Extract Sz results from sol.u
+    for i in 1:nTraj
+        Sz_all[:, i] = sol.u[i]
+    end
+    
+    return tSave, Sz_all
 end
 
+# Main script
 Ω = parse(Float64, ARGS[1])
 γ = parse(Float64, ARGS[2])
 Γ = parse(Float64, ARGS[3])
@@ -152,18 +166,16 @@ flush(stdout)
 
 println("Starting TWA computation for γ = $γ...")
 flush(stdout)
-t, sol = computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
-
-sz_vals = compute_spin_Sz(sol, nAtoms)
+t, sz_vals = computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
 
 println("TWA computation finished for γ = $γ.")
 flush(stdout)
 
 sol_filename = "$(data_folder)/ρ_ss_$(case)D,Ω=$(Ω),Δ=$(Δ),γ=$(γ).jld2"
-jldsave(sol_filename; t=t, sz=sz_vals)
+sz_avg = mean(sz_vals, dims=2)[:]
+jldsave(sol_filename; t=t, sz=sz_avg)
 
 println("Computation completed for Ω = $Ω, γ = $γ.")
 flush(stdout)
 
 sleep(2)
-
