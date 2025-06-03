@@ -89,13 +89,6 @@ function diffusion!(du, u, p, t)
     du[nAtoms+1:2*nAtoms] .= diffusion
 end
 
-function compute_spin_Sz(sol, nAtoms)
-    θ = sol[1:nAtoms, :, :]
-    Szs = sqrt(3) * sum(cos.(θ), dims=1)[1, :, :] / nAtoms
-    Sz = mean(Szs, dims=2)[:]
-    return Sz
-end
-
 function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
     tspan = (0, tf)
     tSave = LinRange(0, tf, nT)
@@ -132,9 +125,7 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
                 dtmax=0.0001)
     
     # Extract Sz results from sol.u
-    for i in 1:nTraj
-        Sz_all[:, i] = sol.u[i]
-    end
+    Sz_all .= hcat(sol.u...)
     
     return tSave, Sz_all
 end
