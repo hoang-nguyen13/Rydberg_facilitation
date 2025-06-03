@@ -1,0 +1,6 @@
+Computing for nAtoms = 9, γ = 0.1, Ω = 8.0
+Directory exists: /home/quw51vuk/Rydberg_facilitation/results_data/atoms=9,Δ=1000.0,γ=0.1
+Starting TWA computation for γ = 0.1...
+TWA computation finished for γ = 0.1.
+Solution saved: /home/quw51vuk/Rydberg_facilitation/results_data/atoms=9,Δ=1000.0,γ=0.1/ρ_ss_2D,Ω=8.0,Δ=1000.0,γ=0.1.jld2
+Sz computation completed for γ = 0.1.

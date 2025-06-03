@@ -3,8 +3,7 @@ using LinearAlgebra
 
 # Function to compute normalized Sz from the 3D array
 function compute_spin_Sz(sol, nAtoms)
-    nTraj = size(sol, 3)  # Get number of trajectories
-    θ = sol[1:nAtoms, :, :]  # Extract θ values (first nAtoms rows)
+    θ = sol  # Extract θ values (first nAtoms rows)
     Szs = sum(sqrt(3) * cos.(θ), dims=1) / (nAtoms)  # Sum over atoms
     return dropdims(Szs, dims=1)  # Convert from 1×nT×nTraj to nT×nTraj
 end
