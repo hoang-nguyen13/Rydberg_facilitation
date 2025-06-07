@@ -1,0 +1,81 @@
+ERROR: LoadError: TaskFailedException
+
+    nested task error: Unrecognized keyword arguments found.
+    The only allowed keyword arguments to `solve` are:
+    (:dense, :saveat, :save_idxs, :tstops, :tspan, :d_discontinuities, :save_everystep, :save_on, :save_start, :save_end, :initialize_save, :adaptive, :abstol, :reltol, :dt, :dtmax, :dtmin, :force_dtmin, :internalnorm, :controller, :gamma, :beta1, :beta2, :qmax, :qmin, :qsteady_min, :qsteady_max, :qoldinit, :failfactor, :calck, :alias_u0, :maxiters, :maxtime, :callback, :isoutofdomain, :unstable_check, :verbose, :merge_callbacks, :progress, :progress_steps, :progress_name, :progress_message, :progress_id, :timeseries_errors, :dense_errors, :weak_timeseries_errors, :weak_dense_errors, :wrap, :calculate_error, :initializealg, :alg, :save_noise, :delta, :seed, :alg_hints, :kwargshandle, :trajectories, :batch_size, :sensealg, :advance_to_tstop, :stop_at_next_tstop, :u0, :p, :default_set, :second_time, :prob_choice, :alias_jump, :alias_noise, :batch, :nlsolve_kwargs, :odesolve_kwargs, :linsolve_kwargs, :ensemblealg, :show_trace, :trace_level, :store_trace, :termination_condition, :alias)
+    
+    See https://diffeq.sciml.ai/stable/basics/common_solver_opts/ for more details.
+    
+    Unrecognized keyword arguments: [:parallel_type]
+    
+    
+    
+    Some of the types have been truncated in the stacktrace for improved reading. To emit complete information
+    in the stack trace, evaluate `TruncatedStacktraces.VERBOSE[] = true` and re-run the code.
+    
+    Stacktrace:
+      [1] #checkkwargs#51
+        @ ~/.julia/packages/DiffEqBase/Qw6nY/src/solve.jl:1234 [inlined]
+      [2] checkkwargs
+        @ ~/.julia/packages/DiffEqBase/Qw6nY/src/solve.jl:1231 [inlined]
+      [3] solve_call(_prob::SDEProblem{Vector{Float64}, Tuple{Float64, Float64}, true, Tuple{Float64, Float64, Float64, Float64, Float64, Int64, Vector{Vector{Int64}}, Vector{Float64}}, Nothing, SDEFunction{true, SciMLBase.FullSpecialize, typeof(drift!), typeof(diffusion!), UniformScaling{Bool}, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, typeof(SciMLBase.DEFAULT_OBSERVED), Nothing, Nothing, Nothing}, typeof(diffusion!), @Kwargs{}, Nothing}, args::SRIW1; merge_callbacks::Bool, kwargshandle::Nothing, kwargs::@Kwargs{saveat::LinRange{Float64, Int64}, maxiters::Float64, abstol::Float64, reltol::Float64, dtmax::Float64, parallel_type::EnsembleDistributed})
+        @ DiffEqBase ~/.julia/packages/DiffEqBase/Qw6nY/src/solve.jl:643
+      [4] solve_call
+        @ ~/.julia/packages/DiffEqBase/Qw6nY/src/solve.jl:624 [inlined]
+      [5] #solve_up#45
+        @ ~/.julia/packages/DiffEqBase/Qw6nY/src/solve.jl:1199 [inlined]
+      [6] solve_up
+        @ ~/.julia/packages/DiffEqBase/Qw6nY/src/solve.jl:1177 [inlined]
+      [7] #solve#43
+        @ ~/.julia/packages/DiffEqBase/Qw6nY/src/solve.jl:1089 [inlined]
+      [8] solve
+        @ ~/.julia/packages/DiffEqBase/Qw6nY/src/solve.jl:1079 [inlined]
+      [9] batch_func(i::Int64, prob::EnsembleProblem{SDEProblem{Vector{Float64}, Tuple{Float64, Float64}, true, Tuple{Float64, Float64, Float64, Float64, Float64, Int64, Vector{Vector{Int64}}, Vector{Float64}}, Nothing, SDEFunction{true, SciMLBase.FullSpecialize, typeof(drift!), typeof(diffusion!), UniformScaling{Bool}, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, typeof(SciMLBase.DEFAULT_OBSERVED), Nothing, Nothing, Nothing}, typeof(diffusion!), @Kwargs{}, Nothing}, var"#19#21"{Int64, Vector{Float64}}, var"#20#22"{Int64}, typeof(SciMLBase.DEFAULT_REDUCTION), Nothing}, alg::SRIW1; kwargs::@Kwargs{saveat::LinRange{Float64, Int64}, maxiters::Float64, abstol::Float64, reltol::Float64, dtmax::Float64, parallel_type::EnsembleDistributed})
+        @ SciMLBase ~/.julia/packages/SciMLBase/7BHQj/src/ensemble/basic_ensemble_solve.jl:233
+     [10] batch_func
+        @ ~/.julia/packages/SciMLBase/7BHQj/src/ensemble/basic_ensemble_solve.jl:220 [inlined]
+     [11] #712
+        @ ~/.julia/packages/SciMLBase/7BHQj/src/ensemble/basic_ensemble_solve.jl:311 [inlined]
+     [12] macro expansion
+        @ ~/.julia/packages/SciMLBase/7BHQj/src/ensemble/basic_ensemble_solve.jl:321 [inlined]
+     [13] (::SciMLBase.var"#1404#threadsfor_fun#716"{SciMLBase.var"#1404#threadsfor_fun#715#717"{SciMLBase.var"#712#714"{@Kwargs{saveat::LinRange{Float64, Int64}, maxiters::Float64, abstol::Float64, reltol::Float64, dtmax::Float64, parallel_type::EnsembleDistributed}, EnsembleProblem{SDEProblem{Vector{Float64}, Tuple{Float64, Float64}, true, Tuple{Float64, Float64, Float64, Float64, Float64, Int64, Vector{Vector{Int64}}, Vector{Float64}}, Nothing, SDEFunction{true, SciMLBase.FullSpecialize, typeof(drift!), typeof(diffusion!), UniformScaling{Bool}, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, typeof(SciMLBase.DEFAULT_OBSERVED), Nothing, Nothing, Nothing}, typeof(diffusion!), @Kwargs{}, Nothing}, var"#19#21"{Int64, Vector{Float64}}, var"#20#22"{Int64}, typeof(SciMLBase.DEFAULT_REDUCTION), Nothing}, SRIW1}, Tuple{UnitRange{Int64}}, Vector{Vector{Float64}}, UnitRange{Int64}}})(tid::Int64; onethread::Bool)
+        @ SciMLBase ./threadingconstructs.jl:215
+     [14] #1404#threadsfor_fun
+        @ ./threadingconstructs.jl:182 [inlined]
+     [15] (::Base.Threads.var"#1#2"{SciMLBase.var"#1404#threadsfor_fun#716"{SciMLBase.var"#1404#threadsfor_fun#715#717"{SciMLBase.var"#712#714"{@Kwargs{saveat::LinRange{Float64, Int64}, maxiters::Float64, abstol::Float64, reltol::Float64, dtmax::Float64, parallel_type::EnsembleDistributed}, EnsembleProblem{SDEProblem{Vector{Float64}, Tuple{Float64, Float64}, true, Tuple{Float64, Float64, Float64, Float64, Float64, Int64, Vector{Vector{Int64}}, Vector{Float64}}, Nothing, SDEFunction{true, SciMLBase.FullSpecialize, typeof(drift!), typeof(diffusion!), UniformScaling{Bool}, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, typeof(SciMLBase.DEFAULT_OBSERVED), Nothing, Nothing, Nothing}, typeof(diffusion!), @Kwargs{}, Nothing}, var"#19#21"{Int64, Vector{Float64}}, var"#20#22"{Int64}, typeof(SciMLBase.DEFAULT_REDUCTION), Nothing}, SRIW1}, Tuple{UnitRange{Int64}}, Vector{Vector{Float64}}, UnitRange{Int64}}}, Int64})()
+        @ Base.Threads ./threadingconstructs.jl:154
+
+...and 35 more exceptions.
+
+Stacktrace:
+  [1] threading_run(fun::SciMLBase.var"#1404#threadsfor_fun#716"{SciMLBase.var"#1404#threadsfor_fun#715#717"{SciMLBase.var"#712#714"{@Kwargs{saveat::LinRange{Float64, Int64}, maxiters::Float64, abstol::Float64, reltol::Float64, dtmax::Float64, parallel_type::EnsembleDistributed}, EnsembleProblem{SDEProblem{Vector{Float64}, Tuple{Float64, Float64}, true, Tuple{Float64, Float64, Float64, Float64, Float64, Int64, Vector{Vector{Int64}}, Vector{Float64}}, Nothing, SDEFunction{true, SciMLBase.FullSpecialize, typeof(drift!), typeof(diffusion!), UniformScaling{Bool}, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, typeof(SciMLBase.DEFAULT_OBSERVED), Nothing, Nothing, Nothing}, typeof(diffusion!), @Kwargs{}, Nothing}, var"#19#21"{Int64, Vector{Float64}}, var"#20#22"{Int64}, typeof(SciMLBase.DEFAULT_REDUCTION), Nothing}, SRIW1}, Tuple{UnitRange{Int64}}, Vector{Vector{Float64}}, UnitRange{Int64}}}, static::Bool)
+    @ Base.Threads ./threadingconstructs.jl:172
+  [2] macro expansion
+    @ ./threadingconstructs.jl:220 [inlined]
+  [3] tmap
+    @ ~/.julia/packages/SciMLBase/7BHQj/src/ensemble/basic_ensemble_solve.jl:320 [inlined]
+  [4] solve_batch(prob::EnsembleProblem{SDEProblem{Vector{Float64}, Tuple{Float64, Float64}, true, Tuple{Float64, Float64, Float64, Float64, Float64, Int64, Vector{Vector{Int64}}, Vector{Float64}}, Nothing, SDEFunction{true, SciMLBase.FullSpecialize, typeof(drift!), typeof(diffusion!), UniformScaling{Bool}, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, typeof(SciMLBase.DEFAULT_OBSERVED), Nothing, Nothing, Nothing}, typeof(diffusion!), @Kwargs{}, Nothing}, var"#19#21"{Int64, Vector{Float64}}, var"#20#22"{Int64}, typeof(SciMLBase.DEFAULT_REDUCTION), Nothing}, alg::SRIW1, ensemblealg::EnsembleThreads, II::UnitRange{Int64}, pmap_batch_size::Int64; kwargs::@Kwargs{saveat::LinRange{Float64, Int64}, maxiters::Float64, abstol::Float64, reltol::Float64, dtmax::Float64, parallel_type::EnsembleDistributed})
+    @ SciMLBase ~/.julia/packages/SciMLBase/7BHQj/src/ensemble/basic_ensemble_solve.jl:310
+  [5] solve_batch
+    @ ~/.julia/packages/SciMLBase/7BHQj/src/ensemble/basic_ensemble_solve.jl:297 [inlined]
+  [6] macro expansion
+    @ ./timing.jl:395 [inlined]
+  [7] (::SciMLBase.var"#697#698"{Int64, Int64, Int64, @Kwargs{saveat::LinRange{Float64, Int64}, maxiters::Float64, abstol::Float64, reltol::Float64, dtmax::Float64, parallel_type::EnsembleDistributed}, EnsembleProblem{SDEProblem{Vector{Float64}, Tuple{Float64, Float64}, true, Tuple{Float64, Float64, Float64, Float64, Float64, Int64, Vector{Vector{Int64}}, Vector{Float64}}, Nothing, SDEFunction{true, SciMLBase.FullSpecialize, typeof(drift!), typeof(diffusion!), UniformScaling{Bool}, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, typeof(SciMLBase.DEFAULT_OBSERVED), Nothing, Nothing, Nothing}, typeof(diffusion!), @Kwargs{}, Nothing}, var"#19#21"{Int64, Vector{Float64}}, var"#20#22"{Int64}, typeof(SciMLBase.DEFAULT_REDUCTION), Nothing}, SRIW1, EnsembleThreads})()
+    @ SciMLBase ~/.julia/packages/SciMLBase/7BHQj/src/ensemble/basic_ensemble_solve.jl:186
+  [8] with_logstate(f::Function, logstate::Any)
+    @ Base.CoreLogging ./logging.jl:515
+  [9] with_logger
+    @ ./logging.jl:627 [inlined]
+ [10] __solve(prob::EnsembleProblem{SDEProblem{Vector{Float64}, Tuple{Float64, Float64}, true, Tuple{Float64, Float64, Float64, Float64, Float64, Int64, Vector{Vector{Int64}}, Vector{Float64}}, Nothing, SDEFunction{true, SciMLBase.FullSpecialize, typeof(drift!), typeof(diffusion!), UniformScaling{Bool}, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, Nothing, typeof(SciMLBase.DEFAULT_OBSERVED), Nothing, Nothing, Nothing}, typeof(diffusion!), @Kwargs{}, Nothing}, var"#19#21"{Int64, Vector{Float64}}, var"#20#22"{Int64}, typeof(SciMLBase.DEFAULT_REDUCTION), Nothing}, alg::SRIW1, ensemblealg::EnsembleThreads; trajectories::Int64, batch_size::Int64, progress_aggregate::Bool, pmap_batch_size::Int64, kwargs::@Kwargs{saveat::LinRange{Float64, Int64}, maxiters::Float64, abstol::Float64, reltol::Float64, dtmax::Float64, parallel_type::EnsembleDistributed})
+    @ SciMLBase ~/.julia/packages/SciMLBase/7BHQj/src/ensemble/basic_ensemble_solve.jl:170
+ [11] #__solve#694
+    @ ~/.julia/packages/SciMLBase/7BHQj/src/ensemble/basic_ensemble_solve.jl:129 [inlined]
+ [12] __solve
+    @ ~/.julia/packages/SciMLBase/7BHQj/src/ensemble/basic_ensemble_solve.jl:119 [inlined]
+ [13] #solve#47
+    @ ~/.julia/packages/DiffEqBase/Qw6nY/src/solve.jl:1217 [inlined]
+ [14] computeTWA(nAtoms::Int64, tf::Float64, nT::Int64, nTraj::Int64, Ω::Float64, Δ::Float64, V::Float64, Γ::Float64, γ::Float64, case::Int64)
+    @ Main ~/Rydberg_facilitation/main.jl:121
+ [15] top-level scope
+    @ ~/Rydberg_facilitation/main.jl:163
+in expression starting at /home/quw51vuk/Rydberg_facilitation/main.jl:163

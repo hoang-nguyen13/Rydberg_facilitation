@@ -94,39 +94,44 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
     tSave = LinRange(0, tf, nT)
     u0 = Vector{Float64}(undef, 2 * nAtoms)
     dϕ_drift_sum = zeros(nAtoms)
-    
     neighbors = case == 2 ? get_neighbors_2d(nAtoms) : case == 3 ? get_neighbors_3d(nAtoms) : nothing
     p = (Ω, Δ, V, Γ, γ, nAtoms, neighbors, dϕ_drift_sum)
-    
+
     # Initialize array to store Sz for all trajectories and time points
     Sz_all = zeros(nT, nTraj)
     
-    prob = SDEProblem(drift!, diffusion!, u0, tspan, p)
-    ensemble_prob = EnsembleProblem(prob; prob_func=(prob, i, repeat) -> begin
-        θ, ϕ = sampleSpinZPlus(nAtoms)
-        u0[1:nAtoms] = θ
-        u0[nAtoms+1:2*nAtoms] = ϕ
-        remake(prob, u0=u0)
-    end, output_func=(sol, i) -> begin
-        # Compute Sz directly from the solution
-        θ = sol[1:nAtoms, :, :]
-        Szs = sqrt(3) * sum(cos.(θ), dims=1)[1, :, :] / nAtoms
-        Sz = Szs[1, :, 1]
-        (Sz, false)  # Return Sz and indicate not to save the full solution
-    end)
-    
-    # Solve the ensemble problem, storing only Sz
-    sol = solve(ensemble_prob, SRIW1(), EnsembleThreads();
-                saveat=tSave,
-                trajectories=nTraj,
-                maxiters=5e9,
-                abstol=1e-3,
-                reltol=1e-3,
-                dtmax=0.0001)
-    
-    # Extract Sz results from sol.u
-    Sz_all .= hcat(sol.u...)
-    
+    # Ensure Julia is started with 16 threads: `julia --threads 16`
+    # Split trajectories across 16 threads
+    chunk_size = cld(nTraj, Threads.nthreads())  # Ceiling division for chunk size
+    Threads.@threads for chunk_idx in 1:Threads.nthreads()
+        # Determine trajectory range for this thread
+        start_idx = (chunk_idx - 1) * chunk_size + 1
+        end_idx = min(chunk_idx * chunk_size, nTraj)
+        
+        for traj in start_idx:end_idx
+            # Initialize initial conditions for each trajectory
+            θ, ϕ = sampleSpinZPlus(nAtoms)
+            u0[1:nAtoms] = θ
+            u0[nAtoms+1:2*nAtoms] = ϕ
+            
+            # Define and solve SDE problem for this trajectory
+            prob = SDEProblem(drift!, diffusion!, u0, tspan, p)
+            sol = solve(prob, SRIW1();
+                        saveat=tSave,
+                        maxiters=5e9,
+                        abstol=1e-3,
+                        reltol=1e-3,
+                        dtmax=0.0001)
+            
+            # Compute Sz from solution
+            θ_sol = sol[1:nAtoms, :, :]
+            Sz = sqrt(3) * sum(cos.(θ_sol), dims=1)[1, :, 1] / nAtoms
+            
+            # Store results in Sz_all
+            Sz_all[:, traj] = Sz
+        end
+    end
+
     return tSave, Sz_all
 end
 

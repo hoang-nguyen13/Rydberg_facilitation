@@ -1,0 +1,12 @@
+ERROR: LoadError: MethodError: no method matching EnsembleDistributed(; nworkers::Int64)
+
+Closest candidates are:
+  EnsembleDistributed() got unsupported keyword argument "nworkers"
+   @ SciMLBase ~/.julia/packages/SciMLBase/7BHQj/src/ensemble/basic_ensemble_solve.jl:37
+
+Stacktrace:
+ [1] computeTWA(nAtoms::Int64, tf::Float64, nT::Int64, nTraj::Int64, Ω::Float64, Δ::Float64, V::Float64, Γ::Float64, γ::Float64, case::Int64)
+   @ Main ~/Rydberg_facilitation/main.jl:119
+ [2] top-level scope
+   @ ~/Rydberg_facilitation/main.jl:161
+in expression starting at /home/quw51vuk/Rydberg_facilitation/main.jl:161
