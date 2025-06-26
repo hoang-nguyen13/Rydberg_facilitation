@@ -1,3 +1,5 @@
 Computing for nAtoms = 81, γ = 0.1, Ω = 13.05552
 Directory exists: /home/quw51vuk/Rydberg_facilitation/results_data/atoms=81,Δ=2000.0,γ=0.1
 Starting TWA computation for γ = 0.1...
+TWA computation finished for γ = 0.1.
+Computation completed for Ω = 13.05552, γ = 0.1.
