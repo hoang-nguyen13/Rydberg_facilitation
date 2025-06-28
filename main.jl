@@ -50,6 +50,7 @@ function get_neighbors_3d(nAtoms)
         ]
         neighbors[i] = atom_neighbors
     end
+
     return neighbors
 end
 
@@ -59,7 +60,11 @@ function drift!(du, u, p, t)
     ϕ = u[nAtoms+1:2*nAtoms]
     sqrt_3 = sqrt(3)
     fill!(dϕ_drift_sum, 0)
+<<<<<<< HEAD
     if nAtoms > 2 && neighbors === nothing
+=======
+    if case == 1
+>>>>>>> 22c59b8 (code)
         dϕ_drift_sum[2:end-1] .= 2 .+ sqrt_3 .* (cos.(θ[1:end-2]) .+ cos.(θ[3:end]))
         dϕ_drift_sum[1] = 1 + sqrt_3 * cos(θ[2])
         dϕ_drift_sum[end] = 1 + sqrt_3 * cos(θ[end-1])
@@ -129,7 +134,6 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
     return tSave, Sz_all
 end
 
-# Main script
 Ω = parse(Float64, ARGS[1])
 γ = parse(Float64, ARGS[2])
 Γ = parse(Float64, ARGS[3])
@@ -156,14 +160,24 @@ flush(stdout)
 
 println("Starting TWA computation for γ = $γ...")
 flush(stdout)
-t, sz_vals = computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
-
+t, sol_array = computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
 println("TWA computation finished for γ = $γ.")
 flush(stdout)
 
-sol_filename = "$(data_folder)/ρ_ss_$(case)D,Ω=$(Ω),Δ=$(Δ),γ=$(γ).jld2"
-sz_avg = mean(sz_vals, dims=2)[:]
-jldsave(sol_filename; t=t, sz=sz_avg)
+sol_filename = "$(data_folder)/temp_sol_$(case)D,Ω=$(Ω),Δ=$(Δ),γ=$(γ).jld2"
+jldsave(sol_filename; t=t, sol=sol_array)
+println("Solution saved temporarily: $sol_filename")
+flush(stdout)
+
+julia_path = joinpath(homedir(), "julia-1.11.2", "bin", "julia")
+compute_sz_script = joinpath(script_dir, "compute_sz.jl")
+cmd = `$julia_path $compute_sz_script $sol_filename $nAtoms $nTraj`
+println("Executing command: $cmd")
+flush(stdout)
+
+run(cmd; wait=true)
+println("Sz computation completed for γ = $γ.")
+flush(stdout)
 
 println("Computation completed for Ω = $Ω, γ = $γ.")
 flush(stdout)
