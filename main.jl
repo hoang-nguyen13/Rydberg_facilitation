@@ -59,7 +59,7 @@ function drift!(du, u, p, t)
     ϕ = u[nAtoms+1:2*nAtoms]
     sqrt_3 = sqrt(3)
     fill!(dϕ_drift_sum, 0)
-    if nAtoms > 2 && neighbors === nothing  # Assume case == 1
+    if nAtoms > 2 && neighbors === nothing
         dϕ_drift_sum[2:end-1] .= 2 .+ sqrt_3 .* (cos.(θ[1:end-2]) .+ cos.(θ[3:end]))
         dϕ_drift_sum[1] = 1 + sqrt_3 * cos(θ[2])
         dϕ_drift_sum[end] = 1 + sqrt_3 * cos(θ[end-1])
@@ -98,7 +98,6 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
     neighbors = case == 2 ? get_neighbors_2d(nAtoms) : case == 3 ? get_neighbors_3d(nAtoms) : nothing
     p = (Ω, Δ, V, Γ, γ, nAtoms, neighbors, dϕ_drift_sum)
 
-    # Initialize array to store Sz for all trajectories and time points
     Sz_all = zeros(nT, nTraj)
 
     prob = SDEProblem(drift!, diffusion!, u0, tspan, p)
@@ -120,8 +119,8 @@ function computeTWA(nAtoms, tf, nT, nTraj, Ω, Δ, V, Γ, γ, case)
                 saveat=tSave,
                 trajectories=nTraj,
                 maxiters=5e9,
-                abstol=1e-4,
-                reltol=1e-4,
+                abstol=1e-3,
+                reltol=1e-3,
                 dtmax=0.0001)
 
     # Extract Sz results from sol.u
