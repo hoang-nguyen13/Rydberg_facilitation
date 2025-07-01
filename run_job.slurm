@@ -1,12 +1,12 @@
 #!/bin/bash
 
 #SBATCH -J Rydberg
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=16
 #SBATCH -t 500:00:00
-#SBATCH -p physik-fleischhauer
+#SBATCH -p epyc-256
 #SBATCH -e err/%x_%A_%a.err
 #SBATCH -o out/%x_%A_%a.out
-#SBATCH --mem-per-cpu=5G
+#SBATCH --mem=0
 
 GAMMA=1
 DELTA=2000
@@ -14,7 +14,7 @@ V=$DELTA
 NATOMS=1225
 TF=2000
 NT=800
-NTRAJ=1
+NTRAJ=12
 CASE=2
 
 PAIR=$(sed -n "$((SLURM_ARRAY_TASK_ID + 1))p" params/pairs.txt)
@@ -22,4 +22,4 @@ read OMEGA GAMMA_DEPHASING <<< "$PAIR"
 
 JULIA=julia
 SCRIPT=/home/quw51vuk/Rydberg_facilitation/main.jl
-$JULIA --project=/home/quw51vuk/Rydberg_facilitation -t auto --check-bounds=yes $SCRIPT $OMEGA $GAMMA_DEPHASING $GAMMA $DELTA $V $NATOMS $TF $NT $NTRAJ $CASE
+$JULIA --project=/home/quw51vuk/Rydberg_facilitation -t 16 --check-bounds=yes $SCRIPT $OMEGA $GAMMA_DEPHASING $GAMMA $DELTA $V $NATOMS $TF $NT $NTRAJ $CASE
