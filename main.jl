@@ -60,11 +60,7 @@ function drift!(du, u, p, t)
     ϕ = u[nAtoms+1:2*nAtoms]
     sqrt_3 = sqrt(3)
     fill!(dϕ_drift_sum, 0)
-<<<<<<< HEAD
     if nAtoms > 2 && neighbors === nothing
-=======
-    if case == 1
->>>>>>> 22c59b8 (code)
         dϕ_drift_sum[2:end-1] .= 2 .+ sqrt_3 .* (cos.(θ[1:end-2]) .+ cos.(θ[3:end]))
         dϕ_drift_sum[1] = 1 + sqrt_3 * cos(θ[2])
         dϕ_drift_sum[end] = 1 + sqrt_3 * cos(θ[end-1])
