@@ -1,0 +1,21 @@
+# Ignore result and log directories
+results_data/
+err/
+out/
+neighbors_data/
+
+# Ignore job submission scripts if not needed
+run_job.slurm
+submit_job.sh
+
+# Ignore parameter files if auto-generated or large
+params/
+
+# Keep main.jl (don't ignore)
+# If you want to ignore backup or temp versions:
+main.jl
+
+# Ignore hidden system files
+*.DS_Store
+*.swp
+
