@@ -7,7 +7,7 @@ neighbors_data/
 # Ignore job submission scripts if not needed
 run_job.slurm
 submit_job.sh
-
+submit_job_singles.sh
 # Ignore parameter files if auto-generated or large
 params/
 
