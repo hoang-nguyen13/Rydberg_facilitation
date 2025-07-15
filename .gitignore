@@ -14,6 +14,7 @@ params/
 # Keep main.jl (don't ignore)
 # If you want to ignore backup or temp versions:
 main.jl
+DP_perc.jl
 
 # Ignore hidden system files
 *.DS_Store
