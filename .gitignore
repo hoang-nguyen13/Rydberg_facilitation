@@ -15,7 +15,8 @@ params/
 # If you want to ignore backup or temp versions:
 main.jl
 dp_perc.jl
-
+inspect.jl
+inspect_rho_ss.jl
 # Ignore hidden system files
 *.DS_Store
 *.swp
