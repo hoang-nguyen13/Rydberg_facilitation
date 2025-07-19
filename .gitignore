@@ -1,9 +1,17 @@
 # Ignore result and log directories
-results_data_mean/
 err/
 out/
 neighbors_data/
 params/
+
+dp_perc.jl
+inspect.jl
+inspect_rho_ss.jl
+main.jl
+run_job.slurm
+submit_job.sh
+submit_job_singles.sh
+
 
 # Ignore hidden system files
 *.DS_Store
