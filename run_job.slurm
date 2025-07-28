@@ -2,7 +2,7 @@
 
 #SBATCH -J Rydberg
 #SBATCH --cpus-per-task=16
-#SBATCH -t 50:00:00
+#SBATCH -t 150:00:00
 #SBATCH -p epyc-256
 #SBATCH -e err/%x_%A_%a.err
 #SBATCH -o out/%x_%A_%a.out
@@ -14,7 +14,7 @@ V=$DELTA
 NATOMS=10000
 TF=1000
 NT=400
-NTRAJ=300
+NTRAJ=100
 CASE=2
 
 PAIR=$(sed -n "$((SLURM_ARRAY_TASK_ID + 1))p" params/pairs.txt)
