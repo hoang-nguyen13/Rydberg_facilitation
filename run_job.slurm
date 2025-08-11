@@ -2,7 +2,7 @@
 
 #SBATCH -J Rydberg
 #SBATCH --cpus-per-task=16
-#SBATCH -t 150:00:00
+#SBATCH -t 200:00:00
 #SBATCH -p epyc-256
 #SBATCH -e err/%x_%A_%a.err
 #SBATCH -o out/%x_%A_%a.out
@@ -11,7 +11,7 @@
 GAMMA=1
 DELTA=2000
 V=$DELTA
-NATOMS=10000
+NATOMS=21025
 TF=1000
 NT=400
 NTRAJ=100
