@@ -2,7 +2,7 @@
 
 #SBATCH -J Rydberg
 #SBATCH --cpus-per-task=16
-#SBATCH -t 200:00:00
+#SBATCH -t 50:00:00
 #SBATCH -p epyc-256
 #SBATCH -e err/%x_%A_%a.err
 #SBATCH -o out/%x_%A_%a.out
@@ -11,11 +11,11 @@
 GAMMA=1
 DELTA=2000
 V=$DELTA
-NATOMS=21025
+NATOMS=3000
 TF=1000
 NT=400
-NTRAJ=100
-CASE=2
+NTRAJ=1
+CASE=1
 
 PAIR=$(sed -n "$((SLURM_ARRAY_TASK_ID + 1))p" params/pairs.txt)
 read OMEGA GAMMA_DEPHASING <<< "$PAIR"
