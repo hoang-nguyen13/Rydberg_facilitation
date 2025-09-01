@@ -3,18 +3,18 @@
 #SBATCH -J Rydberg
 #SBATCH --cpus-per-task=16
 #SBATCH -t 50:00:00
-#SBATCH -p epyc-256
+#SBATCH -p epyc-768
 #SBATCH -e err/%x_%A_%a.err
 #SBATCH -o out/%x_%A_%a.out
-#SBATCH --mem=0
+#SBATCH --mem-per-cpu=5G
 
 GAMMA=1
 DELTA=2000
 V=$DELTA
-NATOMS=3375
+NATOMS=2197
 TF=1000
 NT=400
-NTRAJ=150
+NTRAJ=16
 CASE=3
 
 PAIR=$(sed -n "$((SLURM_ARRAY_TASK_ID + 1))p" params/pairs.txt)
