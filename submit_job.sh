@@ -3,7 +3,7 @@
 declare -A OMEGA_RANGES
 
 #OMEGA_RANGES[20]="$(seq 0 2 29 | xargs -n1 printf '%.2f\n')"
-OMEGA_RANGES[0.00001]="$(seq 7.55 0.03 7.7 | xargs -n1 printf '%.2f\n')"
+OMEGA_RANGES[0.00001]="$(seq 5 0.15 9 | xargs -n1 printf '%.2f\n')"
 
 GAMMA_DEPHASING_VALUES=(0.00001)
 
