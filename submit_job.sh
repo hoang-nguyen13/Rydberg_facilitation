@@ -3,9 +3,9 @@
 declare -A OMEGA_RANGES
 
 #OMEGA_RANGES[20]="$(seq 0 2 29 | xargs -n1 printf '%.2f\n')"
-OMEGA_RANGES[0.00001]="$(seq 5 0.15 9 | xargs -n1 printf '%.2f\n')"
+OMEGA_RANGES[20]="$(seq 10 0.15 13.15 | xargs -n1 printf '%.2f\n')"
 
-GAMMA_DEPHASING_VALUES=(0.00001)
+GAMMA_DEPHASING_VALUES=(20)
 
 PAIRS=()
 for gamma_dephasing in "${GAMMA_DEPHASING_VALUES[@]}"; do
