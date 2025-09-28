@@ -6,7 +6,7 @@
 #SBATCH -p epyc-256
 #SBATCH -e err/%x_%A_%a.err
 #SBATCH -o out/%x_%A_%a.out
-#SBATCH --mem-per-cpu=6G
+#SBATCH --mem=0
 
 GAMMA=1
 DELTA=2000
@@ -14,7 +14,7 @@ V=$DELTA
 NATOMS=3600
 TF=1000
 NT=400
-NTRAJ=16
+NTRAJ=200
 CASE=2
 
 PAIR=$(sed -n "$((SLURM_ARRAY_TASK_ID + 1))p" params/pairs.txt)
